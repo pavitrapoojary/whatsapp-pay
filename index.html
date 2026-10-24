@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WhatsApp Split · prototype v2.0</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 90'%3E%3Cpath fill='%2325D366' d='M90 44.93c0 24.85-20.14 45-45 45-7.91 0-15.37-2.03-21.84-5.61L0 90l6.5-23.37C2.65 60.19.5 52.79.5 44.93.5 20.08 20.64-.06 45.49-.06S90 20.08 90 44.93z'/%3E%3Cpath fill='%23FFF' d='M65.91 53.03c-.93-.47-5.52-2.72-6.38-3.04-.86-.31-1.48-.47-2.1.47-.63.93-2.42 3.04-2.96 3.67-.54.63-1.09.7-2.02.24-5.46-2.73-9.04-4.89-12.67-11.02-.37-.64.39-.59 1.12-1.95.25-.47.12-.9-.06-1.26-.18-.36-2.1-5.07-2.88-6.94-.76-1.83-1.54-1.58-2.11-1.61-.55-.03-1.18-.03-1.81-.03-.63 0-1.65.23-2.52 1.17-.87.94-3.32 3.25-3.32 7.93 0 4.68 3.4 9.2 3.87 9.82.47.63 6.69 10.22 16.21 14.33 9.52 4.11 9.52 2.74 11.23 2.57 1.71-.17 5.52-2.25 6.3-4.42.78-2.17.78-4.03.55-4.42-.23-.39-.85-.62-1.78-1.09z'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #e6ecea;
+  --tx: #111b21;
+  --mut: #54656f;
+  --card: #ffffff;
+  --ln: #d5dedb;
+  --wa-teal: #008069;
+  --wa-green: #00a884;
+  --wa-lightgreen: #25d366;
+  --wa-chat-bg: #efeae2;
+  --wa-bubble-out: #d9fdd3;
+  --wa-bubble-in: #ffffff;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b141a;
+    --tx: #e9edef;
+    --mut: #8696a0;
+    --card: #111b21;
+    --ln: #222d34;
+    --wa-teal: #1f2c34;
+    --wa-green: #00a884;
+    --wa-lightgreen: #00a884;
+    --wa-chat-bg: #0b141a;
+    --wa-bubble-out: #005c4b;
+    --wa-bubble-in: #202c33;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b141a;
+  --tx: #e9edef;
+  --mut: #8696a0;
+  --card: #111b21;
+  --ln: #222d34;
+  --wa-teal: #1f2c34;
+  --wa-green: #00a884;
+  --wa-lightgreen: #00a884;
+  --wa-chat-bg: #0b141a;
+  --wa-bubble-out: #005c4b;
+  --wa-bubble-in: #202c33;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.stage {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 20px 16px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.side {
+  width: 380px;
+  max-width: 100%;
+}
+.side h1 {
+  font-size: 24px;
+  margin: 2px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.side p {
+  color: var(--mut);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+.pn {
+  background: var(--card);
+  border: 1px solid var(--ln);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.pn h3 {
+  margin: 0 0 8px;
+  font-size: 11.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--mut);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.seg {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.seg button, .btn {
+  border: 1px solid var(--ln);
+  background: transparent;
+  color: var(--tx);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.seg button.on {
+  background: var(--wa-green);
+  border-color: var(--wa-green);
+  color: #fff;
+  font-weight: 600;
+}
+.btn {
+  margin: 4px 6px 4px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  border-color: var(--wa-green);
+  background: rgba(0, 168, 132, 0.08);
+}
+.btn-primary {
+  background: #00a884;
+  color: #fff;
+  border-color: #00a884;
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #008f72;
+}
+
+/* Phone Mockup Frame */
+.phone {
+  width: 395px;
+  max-width: 100%;
+  height: 820px;
+  border: 11px solid #101614;
+  border-radius: 44px;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+  color: #111b21;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+.sb {
+  height: 30px;
+  background: #008069;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 12px;
+  font-weight: 600;
+  flex: none;
+  z-index: 10;
+}
+.sb.l {
+  background: #fff;
+  color: #111b21;
+  border-bottom: 1px solid #f0f2f5;
+}
+.scr {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  flex-direction: column;
+  background: #fff;
+}
+.scr.on { display: flex; }
+
+/* Chat List Header */
+.lh {
+  padding: 10px 16px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+}
+.lh b {
+  font-size: 22px;
+  color: #008069;
+  letter-spacing: -0.3px;
+}
+.lh-actions {
+  display: flex;
+  gap: 12px;
+  color: #54656f;
+  font-size: 18px;
+  cursor: pointer;
+}
+.srch {
+  margin: 4px 14px 10px;
+  background: #f0f2f5;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #667781;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cl-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+.li {
+  display: flex;
+  gap: 12px;
+  padding: 10px 16px;
+  align-items: center;
+  cursor: pointer;
+  transition: background .12s;
+  position: relative;
+}
+.li:hover { background: #f5f6f6; }
+.li.active-chat-item { background: #eef8f5; }
+.li .m {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 1px solid #eef1f0;
+  padding-bottom: 9px;
+}
+.li .m b {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #111b21;
+}
+.li .m b em {
+  font-style: normal;
+  font-size: 11.5px;
+  color: #667781;
+  font-weight: 400;
+}
+.li .m span {
+  font-size: 13px;
+  color: #667781;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.li .m span u {
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.bdg {
+  background: #25d366;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 19px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* Chat Screen */
+.hd {
+  background: #008069;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  height: 56px;
+  flex: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.hd .t {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+.hd .t b {
+  display: block;
+  font-size: 15.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hd .t small {
+  font-size: 11.5px;
+  opacity: .9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.ic {
+  background: none;
+  border: 0;
+  color: inherit;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background .12s;
+}
+.ic:hover { background: rgba(255,255,255,0.18); }
+.av {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  flex: none;
+}
+.av.s {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+/* Message Feed */
+.msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px 8px;
+  background: #efeae2 radial-gradient(#dfd8cb 1px, transparent 1px) 0 0/18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.b {
+  max-width: 86%;
+  padding: 7px 9px 5px;
+  border-radius: 9px;
+  font-size: 13.8px;
+  line-height: 1.38;
+  box-shadow: 0 1px .5px rgba(11,20,26,.14);
+  position: relative;
+  word-wrap: break-word;
+}
+.b.in {
+  background: #fff;
+  align-self: flex-start;
+  border-top-left-radius: 2px;
+}
+.b.out {
+  background: #d9fdd3;
+  align-self: flex-end;
+  border-top-right-radius: 2px;
+}
+.b b.n {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+.tm {
+  display: block;
+  text-align: right;
+  font-size: 10.5px;
+  color: #667781;
+  font-style: normal;
+  margin-top: 2px;
+}
+.sys {
+  align-self: center;
+  background: #fff;
+  color: #54656f;
+  font-size: 11.5px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px .5px rgba(11,20,26,.1);
+  margin: 4px 0;
+  text-align: center;
+  max-width: 90%;
+}
+.wp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #008069;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.vf {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #1d9bf0;
+  color: #fff;
+  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.priv {
+  font-size: 11px;
+  color: #667781;
+  margin-top: 4px;
+}
+
+/* Bill / Split Card */
+.card {
+  width: 92%;
+  padding: 10px 12px;
+}
+.bh {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.bh b { font-size: 15px; }
+.bh span { font-size: 12px; color: #667781; }
+.pr {
+  height: 6px;
+  border-radius: 4px;
+  background: #e6ebe9;
+  margin: 7px 0 6px;
+  overflow: hidden;
+}
+.pr i {
+  display: block;
+  height: 100%;
+  background: #00a884;
+  transition: width .5s ease;
+}
+.rw {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid #eef1f0;
+  font-size: 13px;
+}
+.rw .nm { flex: 1; }
+.ok { color: #008069; font-weight: 600; font-size: 12px; }
+.pd { color: #b26a00; font-size: 12px; }
+.pay, .go {
+  background: #00a884;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.pay:hover, .go:hover { background: #008f72; }
+.go[disabled] { background: #b9c7c2; cursor: not-allowed; }
+.lk {
+  background: none;
+  border: 0;
+  color: #027eb5;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-decoration: underline;
+}
+.ft {
+  font-size: 11.5px;
+  color: #667781;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* AI Private Draft Card */
+.ai {
+  align-self: flex-end;
+  width: 94%;
+  background: #fff;
+  border: 1.5px solid transparent;
+  background-image: linear-gradient(#fff, #fff), linear-gradient(120deg, #00a884, #2b8ad6, #8e6bd8);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 14px;
+  padding: 11px 13px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.aih {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4b3fb0;
+}
+.aih span { font-weight: 400; color: #667781; font-size: 11px; }
+.am {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+}
+.am input, .ai .ds {
+  border: 0;
+  border-bottom: 2px solid #d5dedb;
+  font: inherit;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  min-width: 0;
+}
+.am input { width: 140px; }
+.am input:focus, .ai .ds:focus { border-color: #00a884; }
+.ai .ds {
+  width: 100%;
+  font-size: 13.5px;
+  padding: 3px 0;
+  margin-bottom: 8px;
+}
+.ch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+.mc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #d5dedb;
+  border-radius: 999px;
+  padding: 3px 9px 3px 3px;
+  font-size: 12px;
+  background: #fff;
+  cursor: pointer;
+  color: #111b21;
+}
+.mc.on {
+  background: #e7f8f3;
+  border-color: #00a884;
+  font-weight: 600;
+}
+.mc.lk0 { cursor: default; }
+.nt {
+  font-size: 11.5px;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+.nt.high { background: #e7f8f3; color: #0a5c49; }
+.nt.med { background: #fff4dc; color: #7a5200; }
+.nt.low { background: #fde8e8; color: #8a2a2a; }
+.ar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.ar .go { flex: 1; padding: 8px; }
+.ar .sk { background: none; border: 0; color: #54656f; font-size: 12.5px; cursor: pointer; }
+.th {
+  align-self: flex-end;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #4b3fb0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  animation: p 1s infinite alternate;
+}
+@keyframes p { 0% { opacity: .5; transform: scale(.98); } 100% { opacity: 1; transform: scale(1); } }
+
+/* Quick Try Chips Container */
+.tryr {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 7px 10px;
+  background: #f0f2f5;
+  flex: none;
+  scrollbar-width: none;
+  align-items: center;
+  border-top: 1px solid #eef1f0;
+}
+.tryr::-webkit-scrollbar { display: none; }
+.tryr small { color: #667781; font-size: 11px; flex: none; font-weight: 600; }
+.tryr button {
+  flex: none;
+  border: 1px solid #d5dedb;
+  background: #fff;
+  border-radius: 999px;
+  font-size: 11.5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: #111b21;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tryr button:hover {
+  background: #e7f8f3;
+  border-color: #00a884;
+}
+
+/* Composer Bar */
+.cmp {
+  display: flex;
+  gap: 8px;
+  padding: 7px 8px 10px;
+  background: #f0f2f5;
+  flex: none;
+  align-items: center;
+}
+.cmp input {
+  flex: 1;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 14.5px;
+  outline: none;
+  background: #fff;
+  color: #111b21;
+}
+.snd {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #00a884;
+  border: 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .1s;
+}
+.snd:active { transform: scale(.93); }
+
+/* Bottom Nav Tabs */
+.tabs {
+  margin-top: auto;
+  display: flex;
+  border-top: 1px solid #e6ebe9;
+  padding: 8px 0 10px;
+  font-size: 11px;
+  color: #54656f;
+  flex: none;
+  background: #fff;
+}
+.tabs div { flex: 1; text-align: center; cursor: pointer; }
+.tabs .on { color: #008069; font-weight: 700; }
+
+/* Insights View */
+.ib {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  background: #f7f8f8;
+}
+.ib h4 {
+  margin: 16px 0 8px;
+  font-size: 11.5px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #667781;
+}
+.k {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.big { font-size: 28px; font-weight: 700; }
+.big small { font-size: 12.5px; color: #667781; font-weight: 400; }
+.br {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  margin: 7px 0;
+}
+.br span:first-child { width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.br .tr {
+  flex: 1;
+  height: 9px;
+  background: #eef1f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.br .tr i { display: block; height: 100%; border-radius: 6px; }
+.br span:last-child { width: 68px; text-align: right; color: #54656f; font-weight: 600; }
+.sm {
+  background: linear-gradient(135deg,#eaf7f3,#efeaff);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.sm b { color: #4b3fb0; }
+.qa {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.qa button {
+  border: 1px solid #c9bff5;
+  background: #fff;
+  color: #4b3fb0;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.qa button:hover { background: #f4f0ff; }
+.an {
+  margin-top: 8px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: #111b21;
+  border-left: 3px solid #6c5ce7;
+}
+
+/* Bottom Sheet Modal */
+.sh {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: none;
+  align-items: flex-end;
+  z-index: 100;
+  animation: fadeInModal .2s ease;
+}
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+.sh.on { display: flex; }
+.sp {
+  background: #fff;
+  width: 100%;
+  border-radius: 20px 20px 0 0;
+  padding: 18px 20px 20px;
+  animation: slideUp .22s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 85%;
+  overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sp h5 { margin: 0; font-size: 17px; }
+.sp p { margin: 2px 0 12px; color: #667781; font-size: 13px; }
+.dots {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 12px 0 14px;
+}
+.dots i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #00a884;
+}
+.dots i.f { background: #00a884; }
+.kp {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+.kp button {
+  background: #f0f2f5;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #111b21;
+  font-weight: 600;
+}
+.kp button:active { background: #e2e5e9; }
+.suc {
+  text-align: center;
+  padding: 16px 0 10px;
+}
+.suc i {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #00a884;
+  color: #fff;
+  font-style: normal;
+  font-size: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop .35s;
+}
+@keyframes pop { from { transform: scale(.3); } to { transform: scale(1); } }
+
+/* Toasts */
+.toast {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111b21;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  z-index: 120;
+  display: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  pointer-events: none;
+}
+
+/* Settings toggles & options */
+.mo {
+  border: 1.5px solid #d5dedb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.mo.on {
+  border-color: #00a884;
+  background: #e7f8f3;
+}
+.mo b { display: block; font-size: 13.5px; }
+.mo span { font-size: 12px; color: #667781; }
+.tg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 2px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.tg small { color: #667781; font-size: 11.5px; }
+.tg i {
+  width: 38px;
+  height: 22px;
+  border-radius: 12px;
+  background: #c5cfcb;
+  position: relative;
+  flex: none;
+  transition: background .2s;
+}
+.tg i:after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .2s;
+}
+.tg i.on { background: #00a884; }
+.tg i.on:after { left: 18px; }
+.ai .sub { font-size: 12px; color: #667781; margin: 2px 0 6px; }
+
+/* =========================================
+   Interactive WalkMe Guided Tour Styling
+   ========================================= */
+.walkme-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  display: none;
+}
+.walkme-overlay.active {
+  display: block;
+}
+.walkme-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 20, 24, 0.65);
+  pointer-events: auto;
+}
+.walkme-spotlight {
+  position: absolute;
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(10, 20, 24, 0.65), 0 0 15px 4px rgba(0, 168, 132, 0.85);
+  pointer-events: auto;
+  transition: all .25s ease;
+  z-index: 202;
+}
+.walkme-beacon {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #25d366;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.8);
+  animation: walkmePulse 1.4s infinite;
+  z-index: 205;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+@keyframes walkmePulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+  70% { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 0 0 16px rgba(37, 211, 102, 0); }
+  100% { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+.walkme-card {
+  position: absolute;
+  width: 320px;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.32);
+  z-index: 210;
+  pointer-events: auto;
+  animation: wmPop .2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #111b21;
+}
+@keyframes wmPop { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.wm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e7f8f3;
+  color: #008069;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+.wm-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #111b21;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wm-body {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #4a5568;
+  margin: 0 0 12px;
+}
+.wm-body strong { color: #111b21; }
+.wm-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f2f5;
+  padding-top: 10px;
+}
+.wm-dots {
+  display: flex;
+  gap: 5px;
+}
+.wm-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  transition: all .2s;
+}
+.wm-dot.active {
+  width: 16px;
+  border-radius: 999px;
+  background: #00a884;
+}
+.wm-btns {
+  display: flex;
+  gap: 6px;
+}
+.wm-btn-skip {
+  background: none;
+  border: 0;
+  color: #64748b;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.wm-btn-next {
+  background: #00a884;
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wm-btn-next:hover { background: #008f72; }
+
+/* WalkMe Launcher Pill */
+.wm-launcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #008069, #00a884);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 168, 132, 0.25);
+  transition: transform .15s ease;
+}
+.wm-launcher:hover { transform: translateY(-1px); }
+.wm-launcher b { font-size: 13.5px; display: block; }
+.wm-launcher span { font-size: 11.5px; opacity: .9; }
+.wm-launcher i { font-style: normal; font-size: 20px; }
+
+/* Language badge pills */
+.lang-badge {
+  display: inline-block;
+  background: #f0f2f5;
+  color: #4b3fb0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 440px) {
+  .phone {
+    height: calc(100vh - 20px);
+    min-height: 600px;
+    border-width: 6px;
+    border-radius: 28px;
+  }
+}
+
+/* ===== v2: fit-to-viewport + AI surfaces ===== */
+.stage{padding:12px 16px;gap:24px;align-items:flex-start;min-height:100vh}
+.phone{height:min(820px,calc(100vh - 24px));height:min(820px,calc(100dvh - 24px));min-height:540px;border-width:8px;border-radius:38px;position:sticky;top:12px;flex:none}
+.side{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;position:sticky;top:12px;padding-right:4px;scrollbar-width:thin}
+@media (max-width:860px){.side{position:static;max-height:none;overflow:visible}.phone{position:relative;top:0}}
+@media (max-width:440px){.phone{border-width:6px;border-radius:28px;height:calc(100dvh - 12px)}}
+.ev{font-size:11px;color:#54656f;background:#f0f2f5;border-radius:8px;padding:5px 8px;margin-bottom:8px;line-height:1.4}
+.nt.dup{background:#fff4dc;color:#7a5200}
+.askrow{display:flex;gap:6px;margin-top:8px}
+.askrow input{flex:1;min-width:0;border:1px solid #c9bff5;border-radius:999px;padding:6px 10px;font-size:12px;outline:none}
+.askrow button{border:0;background:#6c5ce7;color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
+.prov{font-size:10.5px;color:#667781;margin-top:4px}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 7px;background:#eef1f0;color:#54656f}
+.tag.acc{background:#e8f0ff;color:#2b5fb4}.tag.net{background:#e7f8f3;color:#0a5c49}.tag.can{background:#fde8e8;color:#8a2a2a}
+.side-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 2px 0 6px;
+}
+.side-title-row h1 {
+  margin: 0;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.title-gh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--card);
+  color: var(--mut);
+  text-decoration: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ln);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.title-gh-btn:hover {
+  color: var(--tx);
+  border-color: var(--wa-green);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.side-credit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px 12px;
+  background: rgba(0, 168, 132, 0.05);
+  border: 1px solid var(--ln);
+  border-radius: 10px;
+  font-size: 11.5px;
+  color: var(--mut);
+}
+.side-credit a {
+  color: var(--wa-green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.side-credit a:hover {
+  text-decoration: underline;
+  color: #008069;
+}
+.credit-gh-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.credit-sep {
+  opacity: 0.35;
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <!-- Phone Shell Container -->
+  <div class="phone" id="ph">
+    <!-- SCREEN 1: CHATS LIST -->
+    <div class="scr ls on" id="s-chats" style="top:0">
+      <div class="sb l"><span>9:41</span><span>5G ▮▮▮ 86%</span></div>
+      <div class="lh">
+        <b>WhatsApp</b>
+        <div class="lh-actions">
+          <span title="Search">🔍</span>
+          <span title="Camera">📷</span>
+          <span title="New chat" data-a="wm-start">✨</span>
+          <span title="More">⋮</span>
+        </div>
+      </div>
+      <div class="srch">🔍 Ask Meta AI or search chats</div>
+      
+      <div class="cl-scroll" id="cl">
+        <!-- Rendered chats list items -->
+      </div>
+      
+      <div class="tabs">
+        <div class="on">💬<br>Chats</div>
+        <div data-a="t-tab">⭕<br>Updates</div>
+        <div data-a="t-tab">👥<br>Communities</div>
+        <div data-a="t-tab">📞<br>Calls</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: ACTIVE CONVERSATION -->
+    <div class="scr" id="s-chat" style="top:0">
+      <div class="sb"><span>9:41</span><span>5G ▮▮▮ 86%</span></div>
+      <div class="hd" id="chat-header">
+        <button class="ic" data-a="home" aria-label="Back to chats">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 5l-7 7 7 7"/>
+          </svg>
+        </button>
+        <i class="av s" id="c-av" style="background:#6c5ce7">🏠</i>
+        <div class="t" data-a="chat-info">
+          <b id="c-name">Flat 302 🏠</b>
+          <small id="sub">Aisha, Karan, Rohan, You</small>
+        </div>
+        <button class="ic" data-a="ins" aria-label="Money insights" title="Group money insights">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M5 20V11M12 20V4M19 20v-7"/>
+          </svg>
+        </button>
+        <button class="ic" data-a="cfg" aria-label="Group money settings" title="Group money settings">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="msgs" id="msgs"></div>
+
+      <!-- Quick Try Hinglish & English Chips -->
+      <div class="tryr" id="tryr-box">
+        <small>⚡ Try:</small>
+        <div id="try-chips" style="display:flex;gap:6px"></div>
+      </div>
+
+      <!-- Composer Bar -->
+      <div class="cmp">
+        <input id="inp" placeholder="Message or say ₹ paid in Hinglish..." autocomplete="off">
+        <button class="snd" data-a="send" aria-label="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 20l18-8L3 4v6l12 2-12 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: MONEY INSIGHTS -->
+    <div class="scr" id="s-ins" style="top:0">
+      <div class="sb"><span>9:41</span><span>5G ▮▮▮ 86%</span></div>
+      <div class="hd">
+        <button class="ic" data-a="chat" aria-label="Back to chat">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 5l-7 7 7 7"/>
+          </svg>
+        </button>
+        <div class="t">
+          <b id="ins-title">Money insights</b>
+          <small id="ins-sub">Spending & balances inside the group</small>
+        </div>
+      </div>
+      <div class="ib" id="ib"></div>
+    </div>
+
+    <!-- BOTTOM SHEET: UPI PIN / SETTINGS -->
+    <div class="sh" id="sh"><div class="sp" id="sp"></div></div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div class="toast" id="toast"></div>
+
+    <!-- INTERACTIVE WALKME GUIDED TOUR OVERLAY -->
+    <div class="walkme-overlay" id="walkme">
+      <div class="walkme-backdrop" data-a="wm-backdrop"></div>
+      <div class="walkme-spotlight" id="wm-spotlight"></div>
+      <div class="walkme-beacon" id="wm-beacon"></div>
+      <div class="walkme-card" id="wm-card">
+        <span class="wm-badge" id="wm-step-badge">WalkMe Guide · 1 of 7</span>
+        <div class="wm-title">
+          <span id="wm-title-text">Welcome to WhatsApp Split</span>
+          <button style="background:none;border:0;color:#94a3b8;cursor:pointer;font-size:16px" data-a="wm-skip">✕</button>
+        </div>
+        <div class="wm-body" id="wm-body-text">
+          Split expenses, collect UPI payments, and track group spending naturally right in your chats without leaving WhatsApp.
+        </div>
+        <div class="wm-footer">
+          <div class="wm-dots" id="wm-dots"></div>
+          <div class="wm-btns">
+            <button class="wm-btn-skip" data-a="wm-prev" id="wm-prev-btn">Back</button>
+            <button class="wm-btn-next" data-a="wm-next" id="wm-next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR CONTROLS & INFO -->
+  <div class="side">
+    <div class="wm-launcher" data-a="wm-start">
+      <div>
+        <b>🚀 Interactive WalkMe Tour</b>
+        <span>Guided walkthrough of Hinglish splits & UPI</span>
+      </div>
+      <i>✨</i>
+    </div>
+
+    <div class="side-title-row">
+      <h1>
+        <svg class="wa-title-icon" width="28" height="28" viewBox="0 0 90 90" aria-label="WhatsApp logo" style="flex-shrink:0;vertical-align:middle;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.08));">
+          <path fill="#25D366" d="M90 44.93c0 24.85-20.14 45-45 45-7.91 0-15.37-2.03-21.84-5.61L0 90l6.5-23.37C2.65 60.19.5 52.79.5 44.93.5 20.08 20.64-.06 45.49-.06S90 20.08 90 44.93z"/>
+          <path fill="#FFF" d="M65.91 53.03c-.93-.47-5.52-2.72-6.38-3.04-.86-.31-1.48-.47-2.1.47-.63.93-2.42 3.04-2.96 3.67-.54.63-1.09.7-2.02.24-5.46-2.73-9.04-4.89-12.67-11.02-.37-.64.39-.59 1.12-1.95.25-.47.12-.9-.06-1.26-.18-.36-2.1-5.07-2.88-6.94-.76-1.83-1.54-1.58-2.11-1.61-.55-.03-1.18-.03-1.81-.03-.63 0-1.65.23-2.52 1.17-.87.94-3.32 3.25-3.32 7.93 0 4.68 3.4 9.2 3.87 9.82.47.63 6.69 10.22 16.21 14.33 9.52 4.11 9.52 2.74 11.23 2.57 1.71-.17 5.52-2.25 6.3-4.42.78-2.17.78-4.03.55-4.42-.23-.39-.85-.62-1.78-1.09z"/>
+        </svg>
+        <span>WhatsApp Split</span>
+      </h1>
+      <a href="https://github.com/pavitrapoojary/whatsapp-pay" target="_blank" rel="noopener noreferrer" class="title-gh-btn" title="View Source on GitHub">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+    <p>Say it in chat in <b>English, Hindi, or Hinglish</b>. WhatsApp understands, splits, collects, and settles — without leaving the conversation.</p>
+
+    <!-- Multi-Chat Switcher Quick Info -->
+    <div class="pn">
+      <h3>Active Chat Context</h3>
+      <div class="seg" id="chat-tabs"></div>
+    </div>
+
+    <!-- Viewing Persona -->
+    <div class="pn">
+      <h3>Viewing chat as</h3>
+      <div class="seg" id="who"></div>
+    </div>
+
+    <!-- Time Travel Controls -->
+    <div class="pn">
+      <h3>Time travel &amp; Automation</h3>
+      <button class="btn" data-a="skip">⏩ Skip 1 day (Nudge)</button>
+      <button class="btn" data-a="digest">📊 Month-end digest</button>
+      <button class="btn" data-a="monthend">🗓️ Run settle-up</button>
+      <button class="btn" data-a="reset">↺ Reset everything</button>
+      <div style="font-size:12px;color:var(--mut);margin-top:8px" id="dayl">Day 0</div>
+    </div>
+
+    <!-- Hinglish & Multilingual AI Capabilities -->
+    <div class="pn">
+      <h3>Supported Hinglish &amp; Languages</h3>
+      <div style="margin-bottom:8px">
+        <span class="lang-badge">Hinglish</span>
+        <span class="lang-badge">English</span>
+        <span class="lang-badge">Tamil loanwords</span>
+        <span class="lang-badge">Kannada loanwords</span>
+        <span class="lang-badge">Telugu loanwords</span>
+      </div>
+      <p style="font-size:12.5px;margin-bottom:6px">The parser recognizes conversational phrases automatically:</p>
+      <ul style="font-size:12px;color:var(--mut);margin:0;padding-left:18px;line-height:1.5">
+        <li><b>Payments:</b> <i>"chai nashta 160 bhara"</i>, <i>"biryani 850 Rohan ke saath"</i>, <i>"petrol 600 bharwaya"</i>, <i>"kotte 500 food ge"</i></li>
+        <li><b>Exclusions:</b> <i>"cab 420 Rohan ko chhod ke"</i>, <i>"bina Aisha ke"</i></li>
+        <li><b>UPI Repayments:</b> <i>"Rohan ko 500 gpay kiya"</i>, <i>"cash de diya"</i></li>
+        <li><b>Balance Queries:</b> <i>"mera kitna banta hai?"</i>, <i>"kisne kitna diya?"</i></li>
+      </ul>
+    </div>
+
+    <p style="font-size:11.5px;color:var(--mut)" id="aist">Prototype note: this parser is a rule-based stand-in for the on-device model in the PRD. It simulates the intent score, refusals, evidence line and private answers; UPI is simulated.</p>
+
+    <!-- Author & Repository Credit -->
+    <div class="side-credit">
+      <span>Made with curiosity by <a href="https://pavitra-poojary.vercel.app/" target="_blank" rel="noopener noreferrer"><b>Pavitra Poojary</b></a></span>
+      <span class="credit-sep">·</span>
+      <a href="https://github.com/pavitrapoojary/whatsapp-pay" target="_blank" rel="noopener noreferrer" class="credit-gh-link" title="View Source on GitHub">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====================================================================
+   DATA ARCHITECTURE & MULTI-CHAT REGISTRY
+   ==================================================================== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// Global Colors Registry for avatars
+const USER_COLORS = {
+  Pavitra: '#00a884',
+  Rohan: '#e17055',
+  Aisha: '#8e6bd8',
+  Karan: '#2b8ad6',
+  Sameer: '#0984e3',
+  Tanvi: '#e84393',
+  Vikram: '#6c5ce7',
+  Sneha: '#fd79a8',
+  Rahul: '#00b894',
+  Amit: '#d63031',
+  Dev: '#f39c12',
+  Kunal: '#00cec9',
+  Mom: '#e84393'
+};
+
+const CATEGORY_COLORS = {
+  Rent: '#8e6bd8',
+  Food: '#e17055',
+  Groceries: '#00a884',
+  Utilities: '#2b8ad6',
+  Fun: '#f0a500',
+  Travel: '#d6477a',
+  Personal: '#636e72',
+  Other: '#8696a0'
+};
+
+// Initial state for all 5 functional chats
+const DEFAULT_CHATS = {
+  flat302: {
+    id: 'flat302',
+    name: 'Flat 302 🏠',
+    icon: '🏠',
+    color: '#6c5ce7',
+    type: 'group',
+    members: ['Pavitra', 'Rohan', 'Aisha', 'Karan'],
+    cfg: { mode: 'instant', auto: false, remind: true, limit: 2000 },
+    seed: [
+      ['Rent', 24000, 'Aisha'],
+      ['Groceries', 3200, 'Karan'],
+      ['Utilities', 2849, 'Rohan'],
+      ['Food', 2400, 'Rohan'],
+      ['Fun', 1500, 'Karan']
+    ],
+    msgs: [
+      { t: 'text', from: 'Aisha', text: 'Rent sorted for October 🙌', time: '9:30 AM' },
+      { t: 'bot', text: 'Rent ₹24,000 · everyone has paid Aisha ✅', time: '9:31 AM' },
+      { t: 'text', from: 'Rohan', text: 'who’s getting milk tonight?', time: '9:38 AM' },
+      { t: 'text', from: 'Karan', text: 'me, will pick it up', time: '9:40 AM' }
+    ],
+    bills: [],
+    tryChips: [
+      { l: 'chai nashta 160 bhara', t: 'chai nashta 160 bhara' },
+      { l: 'zomato 850 with Rohan, Aisha', t: 'zomato biryani 850 Rohan aur Aisha ke saath' },
+      { l: 'wifi bill 1199 pay kiya', t: 'wifi bill 1199 maine bhar diya' },
+      { l: 'cab 450 bina Karan ke', t: 'ola cab 450 Karan ko chhod ke' },
+      { l: 'Rohan ko 200 gpay kiya', t: 'Rohan ko 200 gpay kiya' },
+      { l: 'mera kitna banta hai?', t: 'mera kitna banta hai?' }
+    ]
+  },
+  goa: {
+    id: 'goa',
+    name: 'Goa Trip 🏖️',
+    icon: '🏖️',
+    color: '#e17055',
+    type: 'group',
+    members: ['Pavitra', 'Karan', 'Aisha', 'Sameer', 'Tanvi'],
+    cfg: { mode: 'instant', auto: false, remind: true, limit: 3000 },
+    seed: [
+      ['Travel', 18000, 'Sameer'],
+      ['Fun', 12500, 'Aisha'],
+      ['Food', 6400, 'Karan']
+    ],
+    msgs: [
+      { t: 'text', from: 'Sameer', text: 'Flight tickets booked for everyone! ✈️', time: 'Yesterday' },
+      { t: 'text', from: 'Tanvi', text: 'Villa keys collected! Beach is literally 2 mins walk 🌊', time: 'Yesterday' },
+      { t: 'text', from: 'Karan', text: 'Got 3 scooties rented for the weekend', time: '8:45 AM' }
+    ],
+    bills: [],
+    tryChips: [
+      { l: 'scooty rent 1800 Karan, Sameer', t: 'scooty rent 1800 Karan aur Sameer ke saath' },
+      { l: 'beach shack lunch ₹3,200', t: 'beach shack lunch ₹3,200 split equally' },
+      { l: 'petrol 650 bharwaya', t: 'petrol 650 bharwaya' },
+      { l: 'cafe snacks 2400 Tanvi bina', t: 'cafe snacks 2400 Tanvi ko chhod ke sabme' },
+      { l: 'Sameer ko 1000 cash diya', t: 'Sameer ko 1000 cash de diya' },
+      { l: 'kisne sabse zyada kharch kiya?', t: 'kisne sabse zyada kharch kiya?' }
+    ]
+  },
+  office: {
+    id: 'office',
+    name: 'Office Squad 💼',
+    icon: '💼',
+    color: '#2b8ad6',
+    type: 'group',
+    members: ['Pavitra', 'Vikram', 'Sneha', 'Rahul'],
+    cfg: { mode: 'monthly', auto: false, remind: true, limit: 2500 },
+    seed: [
+      ['Food', 4200, 'Vikram'],
+      ['Food', 1850, 'Pavitra'],
+      ['Fun', 1200, 'Sneha']
+    ],
+    msgs: [
+      { t: 'text', from: 'Vikram', text: 'Standup moved to 11 today guys', time: 'Tue' },
+      { t: 'text', from: 'Sneha', text: 'Coffee run anyone? Heading down to Blue Tokai ☕', time: '9:15 AM' },
+      { t: 'text', from: 'Rahul', text: 'Count me in for an iced latte + croissant', time: '9:18 AM' }
+    ],
+    bills: [],
+    tryChips: [
+      { l: 'Starbucks coffee 780 team', t: 'Starbucks coffee 780 team lunch' },
+      { l: 'auto 180 Vikram ke sath', t: 'auto 180 Vikram ke sath split' },
+      { l: 'swiggy lunch 920 Rahul bina', t: 'swiggy lunch 920 bina Rahul ke' },
+      { l: 'samosa party 340 bhara', t: 'samosa party 340 bhara maine' },
+      { l: 'is mahine ka total kitna hai?', t: 'is mahine ka total kitna kharcha hua?' }
+    ]
+  },
+  cricket: {
+    id: 'cricket',
+    name: 'Cricket Sunday 🏏',
+    icon: '🏏',
+    color: '#f0a500',
+    type: 'group',
+    members: ['Pavitra', 'Rohan', 'Amit', 'Dev', 'Kunal'],
+    cfg: { mode: 'instant', auto: false, remind: true, limit: 2000 },
+    seed: [
+      ['Fun', 3000, 'Rohan'],
+      ['Fun', 950, 'Amit'],
+      ['Food', 650, 'Pavitra']
+    ],
+    msgs: [
+      { t: 'text', from: 'Amit', text: 'Turf booked at PlayArena for Sunday 7 AM! 🏏', time: 'Mon' },
+      { t: 'text', from: 'Rohan', text: 'who’s bringing the spare leather ball?', time: 'Mon' },
+      { t: 'text', from: 'Dev', text: 'I got two new balls and wickets', time: 'Yesterday' }
+    ],
+    bills: [],
+    tryChips: [
+      { l: 'turf booking 2400 sabme', t: 'turf booking 2400 sabme barabar baant do' },
+      { l: 'Gatorade & snacks 480', t: 'energy drinks and snacks 480 bhara' },
+      { l: '2 leather balls 700 Amit ne', t: 'leather balls 700 Amit ne diya' },
+      { l: 'Dev ko 400 PhonePe kiya', t: 'Dev ko 400 phonepe kiya' },
+      { l: 'sabka balance kya hai?', t: 'sabka balance kya hai?' }
+    ]
+  },
+  mom: {
+    id: 'mom',
+    name: 'Mom ❤️',
+    icon: '❤️',
+    color: '#d6477a',
+    type: 'direct',
+    members: ['Pavitra', 'Mom'],
+    cfg: { mode: 'instant', auto: false, remind: true, limit: 5000 },
+    seed: [
+      ['Groceries', 2100, 'Mom'],
+      ['Utilities', 1450, 'Pavitra']
+    ],
+    msgs: [
+      { t: 'text', from: 'Mom', text: 'Beta ghar aate waqt dahi aur fruits le aana', time: 'Yesterday' },
+      { t: 'text', from: 'Pavitra', text: 'Haan Mom, le aayi fresh fruits', time: 'Yesterday' },
+      { t: 'text', from: 'Mom', text: 'Call me when free ❤️', time: '9:00 AM' }
+    ],
+    bills: [],
+    tryChips: [
+      { l: 'dawaai 850 khareedi', t: 'chemist se dawaai 850 ki li' },
+      { l: 'Mom ko 1500 gpay kiya', t: 'Mom ko 1500 gpay kiya' },
+      { l: 'kirana samaan 1200 bhara', t: 'kirana samaan 1200 bhara' },
+      { l: 'Mom ne 2000 cash diya', t: 'Mom ne 2000 cash diya mujhe' }
+    ]
+  }
+};
+
+DEFAULT_CHATS.flat302.tryChips.push(
+  { l: 'Aisha ne 900 bhara', t: 'dinner 900 Aisha ne bhara' },
+  { l: 'Rohan ne 300 cash diya', t: 'Rohan ne 300 cash diya mujhe' },
+  { l: 'dawaai 850 ki li', t: 'chemist se dawaai 850 ki li' },
+  { l: 'cancel split', t: 'cancel split' }
+);
+const STORAGE_KEY = 'wa-split-v5';
+let S = null;
+
+// Helpers
+const fmt = c => {
+  const h = Math.floor(c / 60) % 24, m = c % 60;
+  return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'AM' : 'PM');
+};
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const esc = t => String(t || '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const getCol = name => USER_COLORS[name] || '#636e72';
+const av = (n, c = '') => `<i class="av ${c}" style="background:${getCol(n)}">${n ? n[0] : '?'}</i>`;
+
+function toast(t) {
+  const e = $('#toast');
+  e.textContent = t;
+  e.style.display = 'block';
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => e.style.display = 'none', 2000);
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      activeChatId: S.activeChatId,
+      viewer: S.viewer,
+      day: S.day,
+      clock: S.clock,
+      id: S.id,
+      chats: S.chats
+    }));
+  } catch (e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function initApp() {
+  const L = loadState();
+  if (L && L.chats && L.chats.flat302) {
+    S = {
+      activeChatId: L.activeChatId || 'flat302',
+      viewer: L.viewer || 'Pavitra',
+      day: L.day || 0,
+      clock: L.clock || (9 * 60 + 41),
+      id: L.id || 10,
+      pin: '',
+      pay: null,
+      ask: '',
+      draft: null,
+      busy: false,
+      chats: L.chats
+    };
+  } else {
+    // Clone clean copy
+    const cloned = JSON.parse(JSON.stringify(DEFAULT_CHATS));
+    S = {
+      activeChatId: 'flat302',
+      viewer: 'Pavitra',
+      day: 0,
+      clock: 9 * 60 + 41,
+      id: 10,
+      pin: '',
+      pay: null,
+      ask: '',
+      draft: null,
+      busy: false,
+      chats: cloned
+    };
+  }
+
+  renderChatList();
+  renderSidebar();
+  showScreen('chats');
+}
+
+function getActiveChat() {
+  return S.chats[S.activeChatId] || S.chats.flat302;
+}
+
+function pushMsg(chatId, m) {
+  const chat = S.chats[chatId];
+  if (!chat) return;
+  m.time = m.time || fmt(S.clock);
+  S.clock += 1;
+  chat.msgs.push(m);
+  saveState();
+}
+
+/* ====================================================================
+   VIEW NAVIGATION & SCREEN SWITCHING
+   ==================================================================== */
+function showScreen(name) {
+  ['chats', 'chat', 'ins'].forEach(x => {
+    $('#s-' + x).classList.toggle('on', x === name);
+  });
+  if (name === 'chat') {
+    renderChatView();
+  } else if (name === 'ins') {
+    renderInsightsView();
+  } else if (name === 'chats') {
+    renderChatList();
+  }
+}
+
+function openChat(chatId) {
+  S.activeChatId = chatId;
+  const chat = getActiveChat();
+  // Ensure viewer is a member of this chat
+  if (!chat.members.includes(S.viewer)) {
+    S.viewer = chat.members[0];
+  }
+  renderSidebar();
+  showScreen('chat');
+}
+
+/* ====================================================================
+   HINDI, HINGLISH & REGIONAL MULTILINGUAL EXPENSE ENGINE
+   ==================================================================== */
+const EXPENSE_VERBS = [
+  // English
+  'spent', 'paid', 'bought', 'ordered', 'got', 'picked', 'covered', 'fronted', 'booked', 'shared',
+  // Hindi / Hinglish
+  'diya', 'de diya', 'diye', 'pay kiya', 'bhara', 'bhar diya', 'bhare', 'kharch kiya', 'kharcha kiya',
+  'kharcha hua', 'uda diye', 'khareeda', 'khareed liya', 'liya', 'le liya', 'mangwaya', 'order kiya',
+  'daala', 'bheja', 'chuka diya', 'lagaya', 'karcha',
+  // South Indian & Regional loanwords common in metro chats
+  'kotte', 'haakide', 'thande', 'kuduthen', 'kuduthuten', 'vaanginen', 'ichanu', 'petanu', 'dila', 'dilo'
+];
+
+EXPENSE_VERBS.push('bharwaya', 'khareedi', 'ki li', 'baant do');
+
+const CATEGORY_MAP = [
+  { cat: 'Food', regex: /\b(chai|nashta|samosa|tea|coffee|starbucks|blue tokai|breakfast|lunch|dinner|khana|biryani|zomato|swiggy|pizza|burger|cafe|shack|dhaba|snacks|mithai|sweets|maggi|juice|shakes|lassi)\b/i },
+  { cat: 'Groceries', regex: /\b(grocer|grocery|ration|sabzi|doodh|milk|bread|ande|eggs|fruit|fruits|vegetable|vegetables|blinkit|zepto|instamart|bigbasket|kirana|dahi)\b/i },
+  { cat: 'Utilities', regex: /\b(wifi|wi-fi|bijli|electric|electricity|gas|cylinder|water|paani|recharge|maid|cook|maintenance|bill)\b/i },
+  { cat: 'Travel', regex: /\b(petrol|fuel|diesel|cab|uber|ola|auto|rickshaw|rapido|metro|toll|fastag|scooty|bike|car rental|tickets|flight|train|bus)\b/i },
+  { cat: 'Fun', regex: /\b(turf|match|cricket|football|movie|cinema|party|club|resort|villa|stay|hotel|concert|game|games|scuba)\b/i },
+  { cat: 'Rent', regex: /\b(rent|kiraya|room rent|deposit)\b/i }
+];
+
+function parseAmount(text) {
+  const l = text.toLowerCase();
+  
+  // Pattern 1: ₹1,500 or Rs. 1500 or 1500 rs or 1500 rupaye / bucks / inr
+  let m = l.match(/(?:₹|rs\.?\s*|inr\s*|rupaye\s*|rupaiye\s*)(\d[\d,]*(?:\.\d+)?)\s*(k|hazar|sau)?/i);
+  if (!m) {
+    m = l.match(/(\d[\d,]*(?:\.\d+)?)\s*(?:k|hazar|sau)?\s*(?:rs|rupees|rupaye|rupaiye|inr|bucks|\/-)/i);
+  }
+  if (!m) {
+    // Suffix multiplier like "1.5k" or "2 hazar"
+    m = l.match(/(\d[\d,]*(?:\.\d+)?)\s*(k|hazar|sau)\b/i);
+  }
+  if (!m) {
+    // Plain number following a trigger or preceding item
+    m = l.match(/\b(\d{2,6})\b/);
+  }
+
+  if (m) {
+    let val = parseFloat(m[1].replace(/,/g, ''));
+    const mult = (m[2] || '').toLowerCase();
+    if (mult === 'k' || mult === 'hazar') val *= 1000;
+    else if (mult === 'sau') val *= 100;
+    return val;
+  }
+  return 0;
+}
+
+const QUERY_RX = /\b(mera kitna|kitna banta|mera hisab|kitna baki|how much do i owe|how much owed|who owes|balance kya|sabka balance|kisne kitna diya|kisne sabse zyada|who paid the most|total kitna|kitna kharch|pending dues)\b/i;
+const SENSITIVE_RX = /\b(dawaai|dawai|medicine|medicines|chemist|pharmacy|doctor|hospital|clinic|therapy|medical)\b/i;
+const PAY_WORDS = /\b(gpay|phonepe|paytm|upi|cash)\b/i;
+const PAID_WORDS = '(?:paid|spent|bought|diya|bhara|bhar diya|bhare|pay kiya|khareeda|liya|le liya|mangwaya)';
+
+function detectHinglishIntent(text, payer, members) {
+  const l = text.toLowerCase();
+  const chat = getActiveChat();
+  if (chat.cfg.ai === false) return { intent: 'chat' };
+  if (QUERY_RX.test(l)) return { intent: 'query' };
+
+  const amt = parseAmount(l);
+  const others = members.filter(n => n !== payer);
+  const has = n => new RegExp('\\b' + n.toLowerCase() + '\\b').test(l);
+
+  // Settlement claims: "Rohan ko 200 gpay kiya" (I paid) / "Rohan ne 300 cash diya mujhe" (they paid me)
+  const other = others.find(has);
+  if (other && amt > 0 && PAY_WORDS.test(l) && /\b(diya|de diya|kiya|bheja|paid back)\b/.test(l)) {
+    const theyPaidMe = /\bne\b/.test(l) && !/\bko\b/.test(l);
+    return { intent: 'repayment', repay: theyPaidMe ? { from: other, to: payer, amount: amt } : { from: payer, to: other, amount: amt } };
+  }
+  // Someone else paid: only the payer can raise a request, so refuse
+  const proxy = others.find(n => new RegExp('\\b' + n.toLowerCase() + '\\s+(?:ne\\s+)?' + PAID_WORDS + '\\b').test(l));
+  if (proxy && amt > 0) return { intent: 'proxy', who: proxy };
+  if (/\b(cancel|undo|hata do|delete split)\b/.test(l)) return { intent: 'cancel' };
+
+  // Intent score: verb + item + amount + split cue (threshold 0.60)
+  const verb = EXPENSE_VERBS.find(v => new RegExp('\\b' + v + '\\b', 'i').test(l));
+  const catMatch = CATEGORY_MAP.find(c => c.regex.test(l));
+  const item = !!(catMatch || SENSITIVE_RX.test(l) || /\b(bill|party|food|dinner|lunch|groceries|snacks)\b/.test(l));
+  const cue = /\b(ke saath|ke sath|with|aur|and|split|baant|barabar|sabme|sabko|bina|without|except|chhod ke)\b/.test(l);
+  const strongAmt = /₹|\brs\b|\binr\b|rupaye|rupees|bucks|\d\s*(?:k|hazar|sau)\b/.test(l);
+  let score = (verb ? .35 : 0) + (cue ? .15 : 0) + (item ? .25 : 0) + (amt > 0 ? .25 : 0) + (strongAmt ? .05 : 0);
+  if (item && amt >= 20 && !verb) score += .1;
+  if (score < .6 - 1e-9) return { intent: 'chat' };
+
+  let category = catMatch ? catMatch.cat : 'Other';
+  let desc = l.replace(/(?:₹|rs\.?\s*|inr\s*|rupaye\s*)?(\d[\d,]*(?:\.\d+)?)\s*(k|hazar|sau|bucks|\/-)?/gi, '');
+  desc = desc.replace(/\b(i|spent|paid|bought|got|picked|ordered|bhara|bhar|diya|de diya|kharch|kharcha|kiya|hua|maine|hai|ka|ki|ke|liye|pe|on|for|from|ko|se|mangwaya|split|sabme|barabar|equally|maybe|around|approx|lagbhag|shayad|kareeb)\b/gi, ' ');
+  desc = desc.replace(/[?,!—–\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  desc = desc ? desc[0].toUpperCase() + desc.slice(1) : category;
+  if (desc.length > 28) desc = desc.slice(0, 28);
+
+  const named = others.filter(has);
+  let splitMembers = [...members];
+  let why = 'Included everyone in the group.';
+  const isExcl = /\b(chhod ke|chhodkar|chor ke|bina|without|except|excluding)\b/.test(l);
+  const isIncl = /\b(ke saath|ke sath|with|aur|and|between|among)\b/.test(l);
+  if (isExcl && named.length) { splitMembers = members.filter(n => !named.includes(n)); why = `Left out ${named.join(', ')} as specified.`; }
+  else if (isIncl && named.length) { splitMembers = [payer, ...named]; why = `Included only ${splitMembers.join(', ')}.`; }
+
+  let sens = false;
+  if (SENSITIVE_RX.test(l) && chat.type === 'group') { desc = 'Personal expense'; category = 'Personal'; sens = true; }
+
+  const hedge = /\b(maybe|around|approx|lagbhag|shayad|kareeb)\b|~|\?/.test(l);
+  const big = amt > (chat.cfg.limit || 2000) * 8;
+  const dup = amt > 0 && chat.bills.some(b => !b.cancelled && b.payer === payer && b.state !== 'settlement' && Math.round(b.amount) === Math.round(amt) && S.day - b.day <= 1);
+  let conf = 'high';
+  let note = `Understood: ${desc} · ${inr(amt)}. ${why}`;
+  if (amt <= 0) { conf = 'low'; note = 'I couldn’t find an amount. Please type it above; nothing is requested until you do.'; }
+  else if (hedge) { conf = 'med'; note = `You sounded unsure (“around / lagbhag”). Filled ${inr(amt)}. Please verify.`; }
+  else if (big) { conf = 'med'; note = `${inr(amt)} is much larger than usual for this group. Please check the amount.`; }
+  else if (score < .75) { conf = 'med'; note = `Short message, so please check the amount and people. ${why}`; }
+  if (sens) note += ' Health-related detail is hidden from the group card.';
+
+  const ev = [amt > 0 ? `Amount ${inr(amt)}` : null, verb ? `“${verb}” = paid` : null, catMatch ? `Category ${category}` : null, `Score ${score.toFixed(2)}`].filter(Boolean).join(' · ');
+  return { intent: 'expense', payer, amount: amt, desc, cat: category, members: splitMembers, conf, note, ev, dup, sens };
+}
+
+/* ====================================================================
+   EXPENSE SPLIT CALCULATION & LEDGER
+   ==================================================================== */
+function calcSplit(d) {
+  const amt = d.amount;
+  const count = d.members.length;
+  if (count <= 1 || amt <= 0) {
+    return { err: 'Enter an amount and select at least 2 members.' };
+  }
+  const perPerson = Math.floor(amt / count);
+  const shares = {};
+  let totalShares = 0;
+  d.members.forEach(m => {
+    if (m !== d.payer) {
+      shares[m] = perPerson;
+      totalShares += perPerson;
+    }
+  });
+  return {
+    shares,
+    payerShare: Math.round(amt - totalShares)
+  };
+}
+
+function handleAnswerQuery(text, me) {
+  const chat = getActiveChat();
+  const l = text.toLowerCase();
+  const D = computeGroupLedger(chat);
+  if (/mera kitna|mera hisab|kitna banta|how much do i owe|kitna baki|my balance/.test(l)) {
+    const owe = D.pend.filter(p => p[0] === me), got = D.pend.filter(p => p[1] === me);
+    const so = owe.reduce((a, b) => a + b[2], 0), sg = got.reduce((a, b) => a + b[2], 0);
+    if (!so && !sg) return `Sab barabar hai ${me}! No pending dues in ${chat.name} 🎉`;
+    let r = `**Your balance in ${chat.name}:**`;
+    if (so) r += `\n• You owe **${inr(so)}** (${owe.map(o => `${inr(o[2])} to ${o[1]}`).join(', ')})`;
+    if (sg) r += `\n• Others owe you **${inr(sg)}** (${got.map(o => `${o[0]} ${inr(o[2])}`).join(', ')})`;
+    return r;
+  }
+  if (/kisne kitna|who paid the most|kisne sabse zyada/.test(l)) {
+    return `**Upfront spends in ${chat.name}:**\n` + Object.entries(D.by).sort((a, b) => b[1] - a[1]).map(([n, v]) => `• ${n === me ? 'You' : n}: ${inr(v)}`).join('\n');
+  }
+  if (/sabka balance|pending dues|who owes|hisab/.test(l)) {
+    if (!D.pend.length) return `Sabka hisab clear hai! Everyone is settled in ${chat.name} ✅`;
+    return `**Pending dues in ${chat.name}:**\n` + D.pend.map(p => `• ${p[0]} owes ${p[1]}: **${inr(p[2])}**`).join('\n');
+  }
+  if (/total|kharch|spend/.test(l)) return `Total spend in **${chat.name}** is **${inr(D.total)}** (~${inr(D.per)} per member).`;
+  return `I can answer questions about balances, who paid what and totals in **${chat.name}**. I can’t give financial advice or look at other chats.`;
+}
+
+const OPEN_ST = ['request', 'accrued', 'settlement'];
+function computeGroupLedger(chat) {
+  const live = chat.bills.filter(b => !b.cancelled);
+  const entries = [
+    ...chat.seed.map(s => ({ cat: s[0], amt: s[1], by: s[2] })),
+    ...live.filter(b => b.state !== 'settlement').map(b => ({ cat: b.cat, amt: b.amount, by: b.payer }))
+  ];
+  const total = entries.reduce((a, x) => a + x.amt, 0);
+  const cats = {}, by = {}, pend = [];
+  entries.forEach(x => { cats[x.cat] = (cats[x.cat] || 0) + x.amt; by[x.by] = (by[x.by] || 0) + x.amt; });
+  live.filter(b => OPEN_ST.includes(b.state || 'request')).forEach(b =>
+    Object.keys(b.shares).forEach(n => { if (!b.paid[n]) pend.push([n, b.payer, b.shares[n]]); }));
+  const pt = pend.reduce((a, x) => a + x[2], 0);
+  return { total, cats, by, pend, pt, n: entries.length, per: Math.round(total / Math.max(chat.members.length, 1)) };
+}
+
+/* ====================================================================
+   MESSAGE DISPATCH & INTERACTION HANDLERS
+   ==================================================================== */
+function sendMessage(customText) {
+  const inp = $('#inp');
+  const t = (customText || inp.value).trim();
+  if (!t) return;
+  inp.value = '';
+  const chat = getActiveChat();
+  const me = S.viewer;
+  pushMsg(chat.id, { t: 'text', from: me, text: t });
+  S.draft = null;
+  const r = detectHinglishIntent(t, me, chat.members);
+  const later = (ms, fn) => setTimeout(() => { fn(); renderChatView(); renderChatList(); }, ms);
+
+  if (r.intent === 'query') {
+    later(400, () => { S.draft = { kind: 'note', payer: me, title: '✨ Your answer', text: handleAnswerQuery(t, me), share: true, prov: 'Calculated from this chat’s ledger. AI only read your question.' }; });
+  } else if (r.intent === 'repayment') {
+    const p = r.repay;
+    later(450, () => {
+      if (p.to === me) {
+        const used = settleOpenDues(chat, p.from, p.to, p.amount);
+        pushMsg(chat.id, { t: 'bot', text: `💰 ${me} confirmed receiving ${inr(p.amount)} from ${p.from}. ${used ? `Applied ${inr(used)} to open shares ✅` : 'No open share matched, so nothing changed.'}` });
+      } else {
+        pushMsg(chat.id, { t: 'claim', from: p.from, to: p.to, amount: p.amount, done: false });
+      }
+    });
+  } else if (r.intent === 'proxy') {
+    later(400, () => { S.draft = { kind: 'note', payer: me, title: '✨ No split created', text: `This sounds like **${r.who}** paid. Only the person who paid can request money, so I haven’t created anything. Ask ${r.who} to send it from their phone.` }; });
+  } else if (r.intent === 'cancel') {
+    later(350, () => {
+      const b = [...chat.bills].reverse().find(x => x.payer === me && !x.cancelled && !['settlement', 'netted'].includes(x.state));
+      if (!b) S.draft = { kind: 'note', payer: me, title: '✨ Nothing to cancel', text: 'I couldn’t find an open split created by you.' };
+      else if (Object.keys(b.paid).some(n => b.paid[n])) S.draft = { kind: 'note', payer: me, title: '✨ Can’t cancel', text: `**${esc(b.desc)}** already has a payment, so it is locked.` };
+      else { b.cancelled = true; pushMsg(chat.id, { t: 'bot', text: `❌ ${me} cancelled the split “${esc(b.desc)}”.` }); }
+    });
+  } else if (r.intent === 'expense') {
+    S.busy = true;
+    renderChatView();
+    setTimeout(() => { S.busy = false; S.draft = r; renderChatView(); }, 550);
+  } else {
+    renderChatView();
+  }
+}
+
+function settleOpenDues(chat, from, to, amount) {
+  let left = amount;
+  chat.bills.forEach(b => {
+    if (left <= 0 || b.cancelled || !OPEN_ST.includes(b.state || 'request')) return;
+    if (b.payer === to && b.shares[from] && !b.paid[from] && left >= b.shares[from]) { left -= b.shares[from]; b.paid[from] = true; }
+  });
+  return amount - left;
+}
+
+function confirmDraft() {
+  const d = S.draft;
+  if (!d || d.kind) return;
+  const chat = getActiveChat();
+  const c = calcSplit(d);
+  if (c.err) { toast(c.err); return; }
+  const mode = chat.cfg.mode || 'instant';
+  const state = mode === 'track' ? 'track' : mode === 'monthly' ? 'accrued' : 'request';
+  const billId = S.id++;
+  chat.bills.push({ id: billId, payer: d.payer, amount: d.amount, desc: d.desc, cat: d.cat || 'Other', shares: c.shares, paid: {}, paused: false, day: S.day, time: fmt(S.clock), mode, state });
+  S.draft = null;
+  pushMsg(chat.id, { t: 'bill', b: billId });
+  const tail = { request: 'WhatsApp Pay will notify members with 1-tap UPI pay ⚡', accrued: 'It will accrue quietly and be netted at month-end 🗓️', track: 'Tracked only. Nobody is asked to pay 📊' }[state];
+  pushMsg(chat.id, { t: 'bot', text: `Split created for **${esc(d.desc)}** (${inr(d.amount)}). ${tail}` });
+  renderChatView();
+  renderChatList();
+  saveState();
+}
+
+/* ====================================================================
+   UI RENDERING: CHAT LIST, FEED, CARDS, DRAFTS
+   ==================================================================== */
+function lastSnippet(chat) {
+  const m = [...chat.msgs].reverse().find(x => (x.t === 'text' || x.t === 'bill' || x.t === 'bot') && (!x.only || x.only.includes(S.viewer)));
+  if (!m) return 'No messages yet';
+  if (m.t === 'bill') return '💸 Split request';
+  if (m.from) return `${m.from}: ${m.text}`;
+  return `WhatsApp Pay: ${m.text}`;
+}
+
+function renderChatList() {
+  const cl = $('#cl');
+  const chatKeys = Object.keys(S.chats);
+
+  cl.innerHTML = chatKeys.map(k => {
+    const c = S.chats[k];
+    const unread = c.bills.filter(b => !b.cancelled && Object.keys(b.shares).some(n => !b.paid[n])).length;
+    const lastM = c.msgs[c.msgs.length - 1];
+    const timeStr = lastM ? (lastM.time || 'Today') : '9:41 AM';
+
+    return `
+      <div class="li ${k === S.activeChatId ? 'active-chat-item' : ''}" data-a="open-chat" data-cid="${k}">
+        <i class="av" style="background:${c.color}">${c.icon}</i>
+        <div class="m">
+          <b>${esc(c.name)}<em>${timeStr}</em></b>
+          <span>
+            <u>${esc(lastSnippet(c))}</u>
+            ${unread > 0 ? `<i class="bdg">${unread}</i>` : ''}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSidebar() {
+  const chat = getActiveChat();
+
+  // Chat tabs quick selector
+  $('#chat-tabs').innerHTML = Object.keys(S.chats).map(k => {
+    const c = S.chats[k];
+    return `<button class="${k === S.activeChatId ? 'on' : ''}" data-a="switch-chat" data-cid="${k}">${c.icon} ${c.name.split(' ')[0]}</button>`;
+  }).join('');
+
+  // Persona buttons for active chat members
+  $('#who').innerHTML = chat.members.map(n => {
+    const isYou = n === S.viewer;
+    return `<button class="${isYou ? 'on' : ''}" data-a="view-as" data-n="${n}">${isYou ? `You (${n})` : n}</button>`;
+  }).join('');
+
+  $('#dayl').textContent = `Day ${S.day}${S.day ? ' · Automated reminders active' : ''}`;
+}
+
+function renderChatView() {
+  const chat = getActiveChat();
+  $('#c-name').textContent = chat.name;
+  $('#c-av').textContent = chat.icon;
+  $('#c-av').style.background = chat.color;
+  
+  const modeLabel = { instant: '⚡ Instant settle', monthly: '🗓️ Monthly settle-up', track: '📊 Track only' }[chat.cfg.mode];
+  $('#sub').textContent = `${modeLabel} · ${chat.members.join(', ')}`;
+
+  // Render quick chips for this chat
+  const tryBox = $('#try-chips');
+  tryBox.innerHTML = chat.tryChips.map(ch => {
+    return `<button data-a="try" data-t="${esc(ch.t)}">${esc(ch.l)}</button>`;
+  }).join('');
+
+  // Render message history + drafts
+  const msgsEl = $('#msgs');
+  msgsEl.innerHTML = chat.msgs.filter(m => !m.only || m.only.includes(S.viewer)).map(m => renderSingleMsg(m, chat)).join('') + renderDraftHTML();
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
+  updateDraftSummary();
+}
+
+function renderSingleMsg(m, chat) {
+  if (m.t === 'sys') return `<div class="sys">${esc(m.text)}</div>`;
+  if (m.t === 'text') {
+    const isMe = m.from === S.viewer;
+    return `<div class="b ${isMe ? 'out' : 'in'}">${isMe ? '' : `<b class="n" style="color:${getCol(m.from)}">${esc(m.from)}</b>`}${esc(m.text)}<em class="tm">${m.time || ''}${isMe ? ' <span style="color:#53bdeb">✓✓</span>' : ''}</em></div>`;
+  }
+  if (m.t === 'bill') {
+    const b = chat.bills.find(x => x.id === m.b);
+    return b ? `<div class="b in card">${renderBillCard(b, chat)}</div>` : '';
+  }
+  if (m.t === 'claim') {
+    const can = !m.done && S.viewer === m.to;
+    return `<div class="b in"><div class="wp">WhatsApp Pay <span class="vf">✓</span></div>${esc(m.from)} says they paid <b>${inr(m.amount)}</b> to ${esc(m.to)} outside WhatsApp Pay. ${m.done ? '<b>Confirmed ✓</b>' : can ? `<div style="margin-top:6px"><button class="pay" data-a="confirm-claim" data-i="${chat.msgs.indexOf(m)}">Yes, I received it</button></div>` : `Waiting for ${esc(m.to)} to confirm.`}<em class="tm">${m.time || ''}</em></div>`;
+  }
+  return `<div class="b in"><div class="wp">WhatsApp Pay <span class="vf">✓</span></div>${m.only ? '' : ''}${m.text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>')}<em class="tm">${m.time || ''}</em></div>`;
+}
+
+function renderBillCard(b, chat) {
+  const st = b.state || 'request';
+  const isPayer = b.payer === S.viewer;
+  const names = Object.keys(b.shares);
+  const paidCount = names.filter(n => b.paid[n]).length;
+  const live = st === 'request' || st === 'settlement';
+  const isSettled = live && paidCount === names.length;
+  const rows = names.map(n => {
+    let s = '';
+    if (b.cancelled || st === 'track') s = '';
+    else if (st === 'accrued') s = '<span class="tag acc">Accrued</span>';
+    else if (st === 'netted') s = '<span class="tag net">Netted</span>';
+    else if (b.paid[n]) s = '<span class="ok">✓ Paid</span>';
+    else if (n === S.viewer) s = `<button class="pay" data-a="open-pay" data-bid="${b.id}" data-n="${n}">Pay ${inr(b.shares[n])}</button>`;
+    else s = `<span class="pd">Pending</span>` + (isPayer ? ` <button class="lk" data-a="mark-cash" data-bid="${b.id}" data-n="${n}">Got cash</button>` : '');
+    return `<div class="rw">${av(n, 's')}<span class="nm">${n === S.viewer ? 'You' : n}</span><b>${inr(b.shares[n])}</b>${s}</div>`;
+  }).join('');
+  const tag = b.cancelled ? '<span class="tag can">Cancelled</span>' : st === 'track' ? '<span class="tag">📊 Tracked · no request sent</span>' : st === 'accrued' ? '<span class="tag acc">🗓️ Accrues to month-end</span>' : st === 'netted' ? '<span class="tag net">Netted into settle-up</span>' : '';
+  const foot = b.cancelled ? '❌ Cancelled by payer' : isSettled ? '🎉 Settled' : live ? (b.paused ? '⏸️ Reminders paused' : '🔔 Reminders active') : '';
+  return `
+    <div class="wp">WhatsApp Pay <span class="vf">✓</span></div>
+    <div class="bh"><b>${esc(b.desc)} · ${inr(b.amount)}</b><span>paid by ${isPayer ? 'you' : b.payer}</span></div>
+    ${tag ? `<div style="margin-top:4px">${tag}</div>` : ''}
+    ${live && !b.cancelled ? `<div class="pr"><i style="width:${names.length ? paidCount / names.length * 100 : 100}%"></i></div><div style="font-size:11.5px;color:#667781">${paidCount} of ${names.length} paid</div>` : ''}
+    ${rows}
+    <div class="ft"><span>${foot}</span>${live && !isSettled && !b.cancelled && isPayer ? `<button class="lk" data-a="toggle-pause" data-bid="${b.id}">${b.paused ? 'Resume' : 'Pause'}</button>` : ''}</div>
+    <em class="tm">${b.time || ''}</em>`;
+}
+
+function renderDraftHTML() {
+  if (S.busy) return `<div class="th">✨ WhatsApp AI is reading your message…</div>`;
+  const d = S.draft;
+  if (!d || d.payer !== S.viewer) return '';
+  if (d.kind === 'note') {
+    const body = d.text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    return `<div class="ai"><div class="aih">${d.title} <span>🔒 Only you see this</span></div>
+      <div style="font-size:13px;line-height:1.45;margin:8px 0">${body}</div>
+      ${d.prov ? `<div class="prov">${d.prov}</div>` : ''}
+      <div class="ar" style="margin-top:8px">${d.share ? '<button class="go" data-a="share-note">Share in chat</button>' : ''}<button class="${d.share ? 'sk' : 'go'}" data-a="skip-draft">${d.share ? 'Dismiss' : 'Got it'}</button></div></div>`;
+  }
+  const chat = getActiveChat();
+  const chips = chat.members.map(n => {
+    const on = d.members.includes(n), isMe = n === d.payer;
+    return `<button class="mc ${on ? 'on' : ''} ${isMe ? 'lk0' : ''}" data-a="toggle-draft-member" data-n="${n}">${av(n, 's')}${isMe ? 'You' : n}${on ? ' ✓' : ''}</button>`;
+  }).join('');
+  return `
+    <div class="ai">
+      <div class="aih">✨ Split this expense? <span>🔒 Only you see this draft</span></div>
+      <div class="am">₹<input id="dAmt" type="number" inputmode="decimal" placeholder="0" value="${d.amount || ''}"></div>
+      <input class="ds" id="dDesc" value="${esc(d.desc)}" placeholder="What was this for?">
+      <div style="font-size:11.5px;color:#667781">Split between members:</div>
+      <div class="ch">${chips}</div>
+      <div class="nt ${d.conf}">${esc(d.note)}</div>
+      ${d.dup ? '<div class="nt dup">⚠️ Something very similar was already split. Is this a duplicate?</div>' : ''}
+      ${d.ev ? `<div class="ev">Read as: ${esc(d.ev)}</div>` : ''}
+      <div id="ph1" style="font-size:12px;margin-bottom:8px"></div>
+      <div class="ar"><button class="go" id="goBtn" data-a="confirm-draft">Request payment</button><button class="sk" data-a="skip-draft">Cancel</button></div>
+    </div>`;
+}
+
+function updateDraftSummary() {
+  const d = S.draft, goBtn = $('#goBtn'), ph1 = $('#ph1');
+  if (!d || d.kind || !goBtn) return;
+  const mode = getActiveChat().cfg.mode;
+  const ok = d.amount > 0 && d.members.length > 1;
+  goBtn.disabled = !ok;
+  goBtn.textContent = mode === 'track' ? 'Save to ledger' : mode === 'monthly' ? 'Add to month-end' : 'Request payment';
+  if (!ok) { ph1.innerHTML = '<span style="color:#e17055">Enter an amount and select at least 2 people to split.</span>'; return; }
+  const per = Math.floor(d.amount / d.members.length);
+  ph1.innerHTML = mode === 'track' ? `Each share ${inr(per)} · nobody is asked to pay`
+    : mode === 'monthly' ? `Each share ${inr(per)} · accrues, settled at month-end`
+    : `Each person pays <b>${inr(per)}</b> via WhatsApp Pay · You keep ${inr(d.amount - per * (d.members.length - 1))}`;
+}
+
+/* ====================================================================
+   UPI PAYMENT SIMULATION & BOTTOM SHEET
+   ==================================================================== */
+function openPaySheet(billId, memberName) {
+  const chat = getActiveChat();
+  const b = chat.bills.find(x => x.id === billId);
+  if (!b) return;
+
+  S.pay = { billId, memberName };
+  S.pin = '';
+  renderUPIPad();
+}
+
+function renderUPIPad(success = false) {
+  const chat = getActiveChat();
+  const b = chat.bills.find(x => x.id === S.pay.billId);
+  const sp = $('#sp');
+  $('#sh').classList.add('on');
+
+  if (success) {
+    sp.innerHTML = `
+      <div class="suc">
+        <i>✓</i>
+        <h5 style="margin-top:12px">${inr(b.shares[S.pay.memberName])} paid to ${b.payer}</h5>
+        <p>Paid in WhatsApp Pay · UPI Ref: ${Math.floor(100000000000 + Math.random() * 900000000000)}</p>
+      </div>
+    `;
+    return;
+  }
+
+  sp.innerHTML = `
+    <h5>Pay ${b.payer} · ${inr(b.shares[S.pay.memberName])}</h5>
+    <p>${esc(b.desc)} · your share · State Bank of India ••4821</p>
+    <div style="text-align:center;font-size:12.5px;color:#667781">Enter UPI PIN (any 4 digits)</div>
+    <div class="dots">
+      ${[0, 1, 2, 3].map(i => `<i class="${i < S.pin.length ? 'f' : ''}"></i>`).join('')}
+    </div>
+    <div class="kp">
+      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k => `
+        <button data-a="pin-key" data-v="${k}" ${k === '' ? 'style="visibility:hidden"' : ''}>${k}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function processPinKey(v) {
+  if (S.pin.length >= 4 && v !== '⌫') return;
+  if (v === '⌫') {
+    S.pin = S.pin.slice(0, -1);
+  } else {
+    S.pin += v;
+  }
+  renderUPIPad();
+
+  if (S.pin.length === 4) {
+    setTimeout(() => {
+      renderUPIPad(true);
+      setTimeout(() => {
+        $('#sh').classList.remove('on');
+        completePayment(S.pay.billId, S.pay.memberName);
+        S.pay = null;
+      }, 1100);
+    }, 300);
+  }
+}
+
+function completePayment(billId, memberName, isCash = false) {
+  const chat = getActiveChat();
+  const b = chat.bills.find(x => x.id === billId);
+  if (!b) return;
+
+  b.paid[memberName] = true;
+  const shareVal = inr(b.shares[memberName]);
+
+  if (isCash) {
+    pushMsg(chat.id, {
+      t: 'bot',
+      text: `💵 ${b.payer} marked ${memberName}’s ${shareVal} as received in cash ✓`
+    });
+  } else {
+    pushMsg(chat.id, {
+      t: 'bot',
+      text: `✅ **${memberName}** paid ${shareVal} to ${b.payer} for "${esc(b.desc)}" via WhatsApp Pay.`
+    });
+  }
+
+  // Check if all paid
+  if (Object.keys(b.shares).every(n => b.paid[n])) {
+    pushMsg(chat.id, {
+      t: 'bot',
+      text: `🎉 "${esc(b.desc)}" is completely settled! Everyone has paid.`
+    });
+  }
+
+  renderChatView();
+  renderChatList();
+  saveState();
+}
+
+/* ====================================================================
+   TIME TRAVEL & REMINDER AUTOMATION
+   ==================================================================== */
+function advanceDay() {
+  S.day += 1;
+  const chat = getActiveChat();
+  pushMsg(chat.id, { t: 'sys', text: `Day +${S.day} · 9:00 AM Automated Review` });
+  let sent = 0;
+  chat.bills.forEach(b => {
+    if (b.paused || b.cancelled || !['request', 'settlement'].includes(b.state || 'request')) return;
+    const open = Object.keys(b.shares).filter(n => !b.paid[n]);
+    const age = S.day - b.day;
+    if (!open.length) return;
+    if (age === 1) {
+      sent++;
+      pushMsg(chat.id, { t: 'bot', text: `👋 “${esc(b.desc)}” still has ${open.length} unpaid share${open.length > 1 ? 's' : ''}. Tap Pay on the card to settle.` });
+    } else if (age >= 3 && age <= 7) {
+      open.forEach(n => {
+        sent++;
+        pushMsg(chat.id, { t: 'bot', only: [n, b.payer], text: `🔒 Private reminder for ${n}: ${inr(b.shares[n])} for “${esc(b.desc)}” to ${b.payer} is ${age} days old.${age === 7 ? ' This is the final reminder; reminders now pause.' : ''}` });
+      });
+    }
+    if (age === 7) b.paused = true;
+  });
+  toast(sent ? `Day ${S.day}: ${sent} reminder(s) sent` : 'No reminders due today');
+  renderChatView();
+  renderSidebar();
+}
+
+/* ====================================================================
+   MONEY INSIGHTS & MONTHLY DIGEST
+   ==================================================================== */
+function renderInsightsView() {
+  const chat = getActiveChat();
+  const D = computeGroupLedger(chat);
+
+  $('#ins-title').textContent = `${chat.name} Insights`;
+  $('#ins-sub').textContent = `Total spends and breakdown for ${chat.members.length} members`;
+
+  const maxCat = Math.max(...Object.values(D.cats), 1);
+  const maxBy = Math.max(...Object.values(D.by), 1);
+
+  const catBars = Object.entries(D.cats).sort((a,b) => b[1]-a[1]).map(([c, val]) => `
+    <div class="br">
+      <span>${c}</span>
+      <span class="tr"><i style="width:${val/maxCat*100}%;background:${CATEGORY_COLORS[c] || '#8696a0'}"></i></span>
+      <span>${inr(val)}</span>
+    </div>
+  `).join('');
+
+  const whoBars = Object.entries(D.by).sort((a,b) => b[1]-a[1]).map(([name, val]) => `
+    <div class="br">
+      <span>${name === S.viewer ? 'You' : name}</span>
+      <span class="tr"><i style="width:${val/maxBy*100}%;background:${getCol(name)}"></i></span>
+      <span>${inr(val)}</span>
+    </div>
+  `).join('');
+
+  const pendList = D.pend.length ? D.pend.map(p => `
+    <div class="rw" style="border:0">
+      ${av(p[0], 's')}
+      <span class="nm">${p[0]} owes ${p[1]}</span>
+      <b>${inr(p[2])}</b>
+    </div>
+  `).join('') : '<div style="font-size:13px;color:#667781">No pending shares. Everyone is settled ✓</div>';
+
+  $('#ib').innerHTML = `
+    <div class="sm">
+      ✨ <b>AI Group Insights</b><br>
+      Total spent in ${chat.name} is <b>${inr(D.total)}</b> (~${inr(D.per)} per person).
+      ${D.pend.length ? `${inr(D.pt)} is currently unsettled across ${D.pend.length} shares.` : 'All accounts squared up!'}
+      <div class="qa">
+        <button data-a="ask-ins" data-q="who">Who paid the most?</button>
+        <button data-a="ask-ins" data-q="save">Where can we save?</button>
+        <button data-a="ask-ins" data-q="my">My balance</button>
+      </div>
+      <div class="askrow"><input id="askq" placeholder="Ask: kisne kitna diya?" autocomplete="off"><button data-a="ask-free">Ask</button></div>
+      ${S.ask ? `<div class="an">${S.ask}</div>` : ''}
+    </div>
+
+    <h4>Total spend</h4>
+    <div class="k"><div class="big">${inr(D.total)} <small>· ${inr(D.per)} / member</small></div></div>
+
+    <h4>Category Breakdown</h4>
+    <div class="k">${catBars || '<div style="color:#667781">No category data</div>'}</div>
+
+    <h4>Fronted Upfront</h4>
+    <div class="k">${whoBars || '<div style="color:#667781">No payments yet</div>'}</div>
+
+    <h4>Pending in WhatsApp Pay</h4>
+    <div class="k">${pendList}</div>
+  `;
+}
+
+function handleInsightAsk(q) {
+  const chat = getActiveChat();
+  const D = computeGroupLedger(chat);
+  const html = t => t.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+  const prov = `<div class="prov">Calculated from ${D.n} ledger entries. AI only read the question; every number is computed, not generated.</div>`;
+  if (q === 'free') {
+    const t = ($('#askq') || {}).value || '';
+    if (!t.trim()) return;
+    S.ask = html(handleAnswerQuery(t, S.viewer)) + prov;
+  } else if (q === 'who') {
+    S.ask = html(handleAnswerQuery('kisne sabse zyada', S.viewer)) + prov;
+  } else if (q === 'save') {
+    const top = Object.entries(D.cats).sort((a, b) => b[1] - a[1])[0];
+    S.ask = (top ? `${top[0]} is the biggest category at ${inr(top[1])} (${Math.round(top[1] / D.total * 100)}% of spend), so it is the first place to look. I can’t estimate savings without more history.` : 'No expenses recorded yet.') + prov;
+  } else if (q === 'my') {
+    S.ask = html(handleAnswerQuery('my balance', S.viewer)) + prov;
+  }
+  renderInsightsView();
+}
+
+function postMonthDigest() {
+  const chat = getActiveChat();
+  const D = computeGroupLedger(chat);
+  pushMsg(chat.id, {
+    t: 'bot',
+    text: `📊 **Monthly Digest for ${chat.name}**\nTotal: **${inr(D.total)}** (~${inr(D.per)} per person).\n${D.pend.length ? `Pending dues: **${inr(D.pt)}**` : 'All settled up! 🎉'}`
+  });
+  renderChatView();
+  toast('Digest posted in group chat');
+}
+
+function runMonthEndSettle() {
+  const chat = getActiveChat();
+  const acc = chat.bills.filter(b => !b.cancelled && b.state === 'accrued');
+  if (!acc.length) { toast('Nothing accrued. Switch this group to Monthly settle-up and add expenses.'); return; }
+  const net = {};
+  chat.members.forEach(m => net[m] = 0);
+  let shares = 0;
+  acc.forEach(b => Object.keys(b.shares).forEach(n => { if (!b.paid[n]) { net[b.payer] += b.shares[n]; net[n] -= b.shares[n]; shares++; } }));
+  const cr = Object.entries(net).filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]);
+  const db = Object.entries(net).filter(e => e[1] < 0).map(e => [e[0], -e[1]]).sort((a, b) => b[1] - a[1]);
+  const moves = [];
+  let i = 0, j = 0;
+  while (i < cr.length && j < db.length) {
+    const x = Math.min(cr[i][1], db[j][1]);
+    moves.push([db[j][0], cr[i][0], x]);
+    cr[i][1] -= x; db[j][1] -= x;
+    if (cr[i][1] <= 0) i++;
+    if (db[j][1] <= 0) j++;
+  }
+  acc.forEach(b => b.state = 'netted');
+  pushMsg(chat.id, { t: 'sys', text: '🗓️ Month-End Settle-Up' });
+  moves.forEach(([from, to, amt]) => {
+    const id = S.id++;
+    chat.bills.push({ id, payer: to, amount: amt, desc: 'Month-end settle-up', cat: 'Other', shares: { [from]: amt }, paid: {}, paused: false, day: S.day, time: fmt(S.clock), state: 'settlement' });
+    pushMsg(chat.id, { t: 'bill', b: id });
+  });
+  pushMsg(chat.id, { t: 'bot', text: `Netted **${shares} shares** into **${moves.length} transfer${moves.length === 1 ? '' : 's'}** (never more than ${chat.members.length - 1}).` });
+  renderChatView();
+  renderChatList();
+  toast('Month-end settle-up created');
+}
+
+/* ====================================================================
+   SETTINGS MODAL
+   ==================================================================== */
+function showSettingsModal() {
+  const chat = getActiveChat();
+  const c = chat.cfg;
+  const sp = $('#sp');
+
+  const modeOption = (key, icon, title, desc) => `
+    <div class="mo ${c.mode === key ? 'on' : ''}" data-a="set-mode" data-k="${key}">
+      <b>${icon} ${title}</b>
+      <span>${desc}</span>
+    </div>
+  `;
+
+  sp.innerHTML = `
+    <h5>Group Money Settings</h5>
+    <p>Settings for <b>${esc(chat.name)}</b></p>
+    ${modeOption('instant', '⚡', 'Instant settle', 'Every split generates immediate UPI requests. Ideal for trips and dinners.')}
+    ${modeOption('monthly', '🗓️', 'Monthly settle-up', 'Spends accrue quietly; debts are netted into a single payment at month-end. Ideal for flats.')}
+    ${modeOption('track', '📊', 'Track only', 'Record who paid for analytics. No requests are sent.')}
+
+    <div class="tg" data-a="toggle-cfg" data-k="remind">
+      <span><b>Automated Reminders</b><br><small>Day 1 gentle in-chat, Day 3+ private, Day 7 final</small></span>
+      <i class="${c.remind ? 'on' : ''}"></i>
+    </div>
+
+    <div class="tg" data-a="toggle-cfg" data-k="ai">
+      <span><b>Smart expense detection</b><br><small>Reads only your own messages. Drafts stay private.</small></span>
+      <i class="${c.ai !== false ? 'on' : ''}"></i>
+    </div>
+
+    <button class="go" style="width:100%;margin-top:10px" data-a="close-modal">Done</button>
+  `;
+  $('#sh').classList.add('on');
+}
+
+/* ====================================================================
+   INTERACTIVE WALKME GUIDED TOUR CONTROLLER
+   ==================================================================== */
+const WALKME_STEPS = [
+  {
+    title: 'Welcome to WhatsApp Split 👋',
+    body: 'Splitting group expenses should happen right where conversations do. WhatsApp Split lets you chat in <b>English, Hindi, or Hinglish</b> to split, remind, and collect via UPI seamlessly.',
+    target: '#c-name',
+    action: () => { openChat('flat302'); }
+  },
+  {
+    title: '1. Multi-Chat Group Support 💬',
+    body: 'All 5 conversations (<b>Flat 302</b>, <b>Goa Trip</b>, <b>Office Squad</b>, <b>Cricket Sunday</b>, and <b>Mom</b>) have distinct members, ledgers, and currencies. Tap back anytime to explore them all!',
+    target: '#cl',
+    action: () => { showScreen('chats'); }
+  },
+  {
+    title: '2. Natural Hinglish AI Detection ✨',
+    body: 'Type naturally in chat! Say <i>"chai nashta 160 bhara"</i>, <i>"zomato biryani 850 Rohan ke saath"</i>, or <i>"scooty 1800 Tanvi ko chhod ke"</i>. The AI automatically understands Indian amounts, verbs, and exclusions.',
+    target: '#tryr-box',
+    action: () => { openChat('flat302'); }
+  },
+  {
+    title: '3. Private Draft Protection 🔒',
+    body: 'Notice the draft card: <b>Only you can see this draft</b> until you tap "Request payment". WhatsApp never surprises anyone or charges people automatically without your review.',
+    target: '#msgs',
+    action: () => {
+      openChat('flat302');
+      S.draft = {
+        payer: S.viewer,
+        amount: 850,
+        desc: 'Zomato Biryani',
+        cat: 'Food',
+        members: ['Pavitra', 'Rohan', 'Aisha'],
+        conf: 'high',
+        note: 'Understood: Zomato Biryani · ₹850. Included Rohan & Aisha based on your message.'
+      };
+      renderChatView();
+    }
+  },
+  {
+    title: '4. Instant 1-Tap UPI Settlement ⚡',
+    body: 'When you post a split, group members get a clean WhatsApp Pay card. Tapping <b>"Pay"</b> opens a realistic 4-digit UPI PIN pad for instantaneous simulation!',
+    target: '#msgs',
+    action: () => {
+      openChat('flat302');
+      if (!getActiveChat().bills.length) {
+        S.draft = { payer: 'Pavitra', amount: 850, desc: 'Zomato Biryani', cat: 'Food', members: ['Pavitra', 'Rohan', 'Aisha'], conf: 'high', note: '' };
+        confirmDraft();
+      }
+      S.draft = null;
+      renderChatView();
+    }
+  },
+  {
+    title: '5. Switch Personas & Approve Cash 👥',
+    body: 'In the sidebar, switch between flatmates (<b>Rohan, Aisha, Karan, Pavitra</b>) to test their viewpoint, pay their share, or confirm that someone handed you cash.',
+    target: '#who',
+    action: () => {}
+  },
+  {
+    title: '6. Automated Reminders & Insights 📊',
+    body: 'Use <b>"⏩ Skip 1 day"</b> to see escalating WhatsApp nudges, or tap the bar chart in the header to view category spend charts and ask Meta AI questions in Hinglish!',
+    target: '[data-a="ins"]',
+    action: () => {}
+  }
+];
+
+let currentWalkMeStep = 0;
+
+function startWalkMe() {
+  currentWalkMeStep = 0;
+  $('#walkme').classList.add('active');
+  renderWalkMeStep();
+}
+
+function stopWalkMe() {
+  $('#walkme').classList.remove('active');
+  $('#wm-spotlight').style.display = 'none';
+  $('#wm-beacon').style.display = 'none';
+}
+
+function renderWalkMeStep() {
+  const step = WALKME_STEPS[currentWalkMeStep];
+  if (!step) return;
+
+  // Execute step setup action
+  if (step.action) step.action();
+
+  $('#wm-step-badge').textContent = `WalkMe Guide · Step ${currentWalkMeStep + 1} of ${WALKME_STEPS.length}`;
+  $('#wm-title-text').textContent = step.title;
+  $('#wm-body-text').innerHTML = step.body;
+
+  // Render navigation dots
+  $('#wm-dots').innerHTML = WALKME_STEPS.map((_, idx) => `
+    <span class="wm-dot ${idx === currentWalkMeStep ? 'active' : ''}"></span>
+  `).join('');
+
+  $('#wm-prev-btn').style.visibility = currentWalkMeStep === 0 ? 'hidden' : 'visible';
+  $('#wm-next-btn').textContent = currentWalkMeStep === WALKME_STEPS.length - 1 ? 'Finish 🎉' : 'Next →';
+
+  // Position Spotlight & Beacon
+  setTimeout(() => {
+    positionWalkMeElements(step.target);
+  }, 100);
+}
+
+function positionWalkMeElements(targetSelector) {
+  const target = targetSelector ? document.querySelector(targetSelector) : null;
+  const spotlight = $('#wm-spotlight');
+  const beacon = $('#wm-beacon');
+  const card = $('#wm-card');
+  const phone = $('#ph');
+
+  if (target) {
+    const rect = target.getBoundingClientRect();
+    const phoneRect = phone.getBoundingClientRect();
+
+    // Relative to phone container
+    const top = rect.top - phoneRect.top;
+    const left = rect.left - phoneRect.left;
+    const width = rect.width;
+    const height = rect.height;
+
+    spotlight.style.display = 'block';
+    spotlight.style.top = (top - 4) + 'px';
+    spotlight.style.left = (left - 4) + 'px';
+    spotlight.style.width = (width + 8) + 'px';
+    spotlight.style.height = (height + 8) + 'px';
+
+    beacon.style.display = 'block';
+    beacon.style.top = top + (height / 2) + 'px';
+    beacon.style.left = (left + width - 12) + 'px';
+
+    // Position Card intelligently inside phone
+    if (top > phoneRect.height / 2) {
+      card.style.top = Math.max(40, top - 210) + 'px';
+      card.style.left = '36px';
+    } else {
+      card.style.top = Math.min(phoneRect.height - 240, top + height + 16) + 'px';
+      card.style.left = '36px';
+    }
+  } else {
+    spotlight.style.display = 'none';
+    beacon.style.display = 'none';
+    card.style.top = '220px';
+    card.style.left = '36px';
+  }
+}
+
+/* ====================================================================
+   GLOBAL EVENT DELEGATION
+   ==================================================================== */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]');
+  if (!el) return;
+  const a = el.dataset.a;
+  const d = el.dataset;
+
+  // WalkMe interactions
+  if (a === 'wm-start') { startWalkMe(); return; }
+  if (a === 'wm-skip' || a === 'wm-backdrop') { stopWalkMe(); return; }
+  if (a === 'wm-next') {
+    if (currentWalkMeStep < WALKME_STEPS.length - 1) {
+      currentWalkMeStep++;
+      renderWalkMeStep();
+    } else {
+      stopWalkMe();
+      toast('WalkMe tour finished! Enjoy splitting 🎉');
+    }
+    return;
+  }
+  if (a === 'wm-prev') {
+    if (currentWalkMeStep > 0) {
+      currentWalkMeStep--;
+      renderWalkMeStep();
+    }
+    return;
+  }
+
+  // Navigation
+  if (a === 'open-chat') { openChat(d.cid); }
+  else if (a === 'home') { renderChatList(); showScreen('chats'); }
+  else if (a === 'switch-chat') { openChat(d.cid); }
+  else if (a === 'ins') { showScreen('ins'); }
+  else if (a === 'chat') { showScreen('chat'); }
+  else if (a === 'cfg') { showSettingsModal(); }
+  else if (a === 'close-modal') { $('#sh').classList.remove('on'); }
+
+  // Messaging & Quick Try
+  else if (a === 'send') { sendMessage(); }
+  else if (a === 'try') {
+    $('#inp').value = d.t;
+    setTimeout(() => sendMessage(), 250);
+  }
+
+  // Draft actions
+  else if (a === 'toggle-draft-member') {
+    if (!S.draft || d.n === S.draft.payer) return;
+    const mems = S.draft.members;
+    const idx = mems.indexOf(d.n);
+    if (idx >= 0) mems.splice(idx, 1);
+    else mems.push(d.n);
+    renderChatView();
+  }
+  else if (a === 'confirm-draft') { confirmDraft(); }
+  else if (a === 'skip-draft') { S.draft = null; renderChatView(); }
+
+  // Payment actions
+  else if (a === 'open-pay') { openPaySheet(+d.bid, d.n); }
+  else if (a === 'mark-cash') { completePayment(+d.bid, d.n, true); }
+  else if (a === 'pin-key') { processPinKey(d.v); }
+  else if (a === 'toggle-pause') {
+    const chat = getActiveChat();
+    const b = chat.bills.find(x => x.id === +d.bid);
+    if (b) {
+      b.paused = !b.paused;
+      renderChatView();
+      toast(b.paused ? 'Reminders paused for this split' : 'Reminders resumed');
+    }
+  }
+
+  // Sidebar Controls
+  else if (a === 'view-as') {
+    S.viewer = d.n;
+    renderSidebar();
+    renderChatView();
+    renderChatList();
+  }
+  else if (a === 'skip') { advanceDay(); }
+  else if (a === 'digest') { postMonthDigest(); }
+  else if (a === 'monthend') { runMonthEndSettle(); }
+  else if (a === 'reset') {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
+    initApp();
+    toast('Prototype reset to initial state');
+  }
+
+  // Settings
+  else if (a === 'set-mode') {
+    const chat = getActiveChat();
+    chat.cfg.mode = d.k;
+    saveState();
+    showSettingsModal();
+    renderChatView();
+  }
+  else if (a === 'toggle-cfg') {
+    const chat = getActiveChat();
+    chat.cfg[d.k] = d.k === 'ai' ? chat.cfg.ai === false : !chat.cfg[d.k];
+    saveState();
+    showSettingsModal();
+  }
+
+  // Insights Q&A
+  else if (a === 'ask-ins') { handleInsightAsk(d.q); }
+  else if (a === 'ask-free') { handleInsightAsk('free'); }
+  else if (a === 'share-note') {
+    const n = S.draft;
+    if (n && n.kind === 'note') { pushMsg(getActiveChat().id, { t: 'bot', text: n.text }); S.draft = null; renderChatView(); }
+  }
+  else if (a === 'confirm-claim') {
+    const chat = getActiveChat(), m = chat.msgs[+d.i];
+    if (m && !m.done) {
+      m.done = true;
+      const used = settleOpenDues(chat, m.from, m.to, m.amount);
+      pushMsg(chat.id, { t: 'bot', text: `✅ ${m.to} confirmed receiving ${inr(m.amount)} from ${m.from}. ${used ? `Applied ${inr(used)} to open shares.` : 'No open share matched.'}` });
+      renderChatView(); renderChatList();
+    }
+  }
+});
+
+// Draft inputs
+document.addEventListener('input', e => {
+  if (!S.draft) return;
+  if (e.target.id === 'dAmt') {
+    S.draft.amount = parseFloat(e.target.value) || 0;
+    updateDraftSummary();
+  }
+  if (e.target.id === 'dDesc') {
+    S.draft.desc = e.target.value;
+  }
+});
+
+// Keypress enter
+$('#inp').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Window startup
+document.addEventListener('keydown', e => { if (e.target.id === 'askq' && e.key === 'Enter') handleInsightAsk('free'); });
+
+window.onload = function() {
+  initApp();
+};
+</script>
+</body>
+</html>
