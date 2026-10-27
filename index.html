@@ -61,16 +61,16 @@ body {
 }
 .stage {
   display: flex;
-  gap: 32px;
+  gap: 20px;
   justify-content: center;
   align-items: flex-start;
   flex-wrap: wrap;
-  padding: 20px 16px;
-  max-width: 1240px;
+  padding: 12px 16px;
+  max-width: 1420px;
   margin: 0 auto;
 }
 .side {
-  width: 380px;
+  width: 340px;
   max-width: 100%;
 }
 .side h1 {
@@ -1069,20 +1069,77 @@ body {
   }
 }
 
-/* ===== v2: fit-to-viewport + AI surfaces ===== */
-.stage{padding:12px 16px;gap:24px;align-items:flex-start;min-height:100vh}
-.phone{height:min(820px,calc(100vh - 24px));height:min(820px,calc(100dvh - 24px));min-height:540px;border-width:8px;border-radius:38px;position:sticky;top:12px;flex:none}
-.side{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;position:sticky;top:12px;padding-right:4px;scrollbar-width:thin}
-@media (max-width:860px){.side{position:static;max-height:none;overflow:visible}.phone{position:relative;top:0}}
-@media (max-width:440px){.phone{border-width:6px;border-radius:28px;height:calc(100dvh - 12px)}}
-.ev{font-size:11px;color:#54656f;background:#f0f2f5;border-radius:8px;padding:5px 8px;margin-bottom:8px;line-height:1.4}
-.nt.dup{background:#fff4dc;color:#7a5200}
-.askrow{display:flex;gap:6px;margin-top:8px}
-.askrow input{flex:1;min-width:0;border:1px solid #c9bff5;border-radius:999px;padding:6px 10px;font-size:12px;outline:none}
-.askrow button{border:0;background:#6c5ce7;color:#fff;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
-.prov{font-size:10.5px;color:#667781;margin-top:4px}
-.tag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 7px;background:#eef1f0;color:#54656f}
-.tag.acc{background:#e8f0ff;color:#2b5fb4}.tag.net{background:#e7f8f3;color:#0a5c49}.tag.can{background:#fde8e8;color:#8a2a2a}
+/* ===== v2: fit-to-viewport 3-column desktop layout (No vertical scrolling) ===== */
+.stage {
+  padding: 12px 16px;
+  gap: 20px;
+  align-items: flex-start;
+  min-height: 100vh;
+  max-width: 1420px;
+}
+.phone {
+  height: min(800px, calc(100vh - 24px));
+  height: min(800px, calc(100dvh - 24px));
+  min-height: 520px;
+  border-width: 8px;
+  border-radius: 38px;
+  position: sticky;
+  top: 12px;
+  flex: 0 0 385px;
+  width: 385px;
+}
+.side {
+  flex: 0 0 340px;
+  width: 340px;
+  max-width: 100%;
+  position: sticky;
+  top: 12px;
+  overflow: visible;
+}
+.side-exp {
+  flex: 1 1 380px;
+  min-width: 320px;
+  max-width: 460px;
+  position: sticky;
+  top: 12px;
+}
+@media (max-width: 1180px) {
+  .stage { gap: 16px; }
+  .side { flex: 1 1 320px; width: auto; }
+  .side-exp { flex: 1 1 340px; max-width: 100%; }
+}
+@media (max-width: 860px) {
+  .side, .side-exp {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    width: 100%;
+    flex: 1 1 100%;
+  }
+  .phone {
+    position: relative;
+    top: 0;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 440px) {
+  .phone {
+    border-width: 6px;
+    border-radius: 28px;
+    height: calc(100dvh - 12px);
+    width: 100%;
+  }
+}
+.ev { font-size: 11px; color: #54656f; background: #f0f2f5; border-radius: 8px; padding: 5px 8px; margin-bottom: 8px; line-height: 1.4; }
+.nt.dup { background: #fff4dc; color: #7a5200; }
+.askrow { display: flex; gap: 6px; margin-top: 8px; }
+.askrow input { flex: 1; min-width: 0; border: 1px solid #c9bff5; border-radius: 999px; padding: 6px 10px; font-size: 12px; outline: none; }
+.askrow button { border: 0; background: #6c5ce7; color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+.prov { font-size: 10.5px; color: #667781; margin-top: 4px; }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; border-radius: 6px; padding: 2px 7px; background: #eef1f0; color: #54656f; }
+.tag.acc { background: #e8f0ff; color: #2b5fb4; }
+.tag.net { background: #e7f8f3; color: #0a5c49; }
+.tag.can { background: #fde8e8; color: #8a2a2a; }
 .side-title-row {
   display: flex;
   align-items: center;
@@ -1097,6 +1154,13 @@ body {
   align-items: center;
   gap: 8px;
 }
+.side-title-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
 .title-gh-btn {
   display: inline-flex;
   align-items: center;
@@ -1104,13 +1168,15 @@ body {
   background: var(--card);
   color: var(--mut);
   text-decoration: none;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   border: 1px solid var(--ln);
   transition: all 0.2s ease;
   flex-shrink: 0;
+  min-width: 76px;
+  justify-content: center;
 }
 .title-gh-btn:hover {
   color: var(--tx);
@@ -1124,7 +1190,7 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 12px;
   padding: 8px 12px;
   background: rgba(0, 168, 132, 0.05);
   border: 1px solid var(--ln);
@@ -1150,6 +1216,124 @@ body {
 .credit-sep {
   opacity: 0.35;
 }
+
+/* Right Side Explanation & Reference Block Styling */
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.exp-header h3 {
+  margin: 0;
+}
+.exp-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(0, 168, 132, 0.12);
+  color: #008069;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+.exp-sub {
+  font-size: 12px;
+  color: var(--mut);
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+.exp-category {
+  margin-bottom: 9px;
+}
+.exp-category:last-child {
+  margin-bottom: 0;
+}
+.exp-cat-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.exp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.exp-chip {
+  background: var(--bg);
+  border: 1px solid var(--ln);
+  color: var(--tx);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.exp-chip:hover {
+  background: #e7f8f3;
+  border-color: var(--wa-green);
+  color: #008069;
+  transform: translateY(-1px);
+}
+.arch-card h3 {
+  margin: 0 0 10px;
+}
+.arch-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.arch-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.arch-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+.arch-item b {
+  display: block;
+  font-size: 12px;
+  color: var(--tx);
+  margin-bottom: 1px;
+}
+.arch-item p {
+  font-size: 11px;
+  color: var(--mut);
+  margin: 0;
+  line-height: 1.35;
+}
+:root[data-theme="dark"] .exp-chip:hover,
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .exp-chip:hover {
+    background: #1f2c34;
+    border-color: #00a884;
+    color: #25d366;
+  }
+  :root:not([data-theme="light"]) .exp-badge {
+    background: rgba(0, 168, 132, 0.2);
+    color: #25d366;
+  }
+  :root:not([data-theme="light"]) .lang-badge {
+    background: #1f2c34;
+    color: #a29bfe;
+  }
+}
+
+
 </style>
 </head>
 <body>
@@ -1296,12 +1480,22 @@ body {
         </svg>
         <span>WhatsApp Split</span>
       </h1>
-      <a href="https://github.com/pavitrapoojary/whatsapp-pay" target="_blank" rel="noopener noreferrer" class="title-gh-btn" title="View Source on GitHub">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-        </svg>
-        <span>GitHub</span>
-      </a>
+      <div class="side-title-actions">
+        <a href="https://github.com/pavitrapoojary/whatsapp-pay" target="_blank" rel="noopener noreferrer" class="title-gh-btn" title="View Source on GitHub">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+        <a href="PRD.pdf" download="WhatsApp_Split_PRD_v3_0.pdf" target="_blank" class="title-gh-btn" title="Download PRD Specification PDF">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+          </svg>
+          <span>PRD.pdf</span>
+        </a>
+      </div>
     </div>
     <p>Say it in chat in <b>English, Hindi, or Hinglish</b>. WhatsApp understands, splits, collects, and settles — without leaving the conversation.</p>
 
@@ -1327,9 +1521,16 @@ body {
       <div style="font-size:12px;color:var(--mut);margin-top:8px" id="dayl">Day 0</div>
     </div>
 
-    <!-- Hinglish & Multilingual AI Capabilities -->
+  </div>
+
+  <!-- RIGHT SIDE BLOCK: EXPLANATION, ARCHITECTURE & CREDITS (NO SCROLLING) -->
+  <div class="side-exp">
+    <!-- Supported Hinglish & Natural Speech Capabilities -->
     <div class="pn">
-      <h3>Supported Hinglish &amp; Languages</h3>
+      <div class="exp-header">
+        <h3>🗣️ Supported Hinglish &amp; Dialects</h3>
+        <span class="exp-badge">Interactive</span>
+      </div>
       <div style="margin-bottom:8px">
         <span class="lang-badge">Hinglish</span>
         <span class="lang-badge">English</span>
@@ -1337,16 +1538,74 @@ body {
         <span class="lang-badge">Kannada loanwords</span>
         <span class="lang-badge">Telugu loanwords</span>
       </div>
-      <p style="font-size:12.5px;margin-bottom:6px">The parser recognizes conversational phrases automatically:</p>
-      <ul style="font-size:12px;color:var(--mut);margin:0;padding-left:18px;line-height:1.5">
-        <li><b>Payments:</b> <i>"chai nashta 160 bhara"</i>, <i>"biryani 850 Rohan ke saath"</i>, <i>"petrol 600 bharwaya"</i>, <i>"kotte 500 food ge"</i></li>
-        <li><b>Exclusions:</b> <i>"cab 420 Rohan ko chhod ke"</i>, <i>"bina Aisha ke"</i></li>
-        <li><b>UPI Repayments:</b> <i>"Rohan ko 500 gpay kiya"</i>, <i>"cash de diya"</i></li>
-        <li><b>Balance Queries:</b> <i>"mera kitna banta hai?"</i>, <i>"kisne kitna diya?"</i></li>
-      </ul>
+      <p class="exp-sub">On-device parser detects Indian colloquial money talk. <b>Tap any phrase below to test in chat:</b></p>
+      
+      <div class="exp-category">
+        <div class="exp-cat-title">💳 Payments &amp; Shared Bills</div>
+        <div class="exp-chips">
+          <button class="exp-chip" data-a="try" data-t="chai nashta 160 bhara" title="Click to try in chat">"chai nashta 160 bhara" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="biryani 850 Rohan ke saath" title="Click to try in chat">"biryani 850 Rohan ke saath" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="petrol 600 bharwaya" title="Click to try in chat">"petrol 600 bharwaya" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="kotte 500 food ge" title="Click to try in chat">"kotte 500 food ge" ⚡</button>
+        </div>
+      </div>
+
+      <div class="exp-category">
+        <div class="exp-cat-title">🚫 Member Exclusions</div>
+        <div class="exp-chips">
+          <button class="exp-chip" data-a="try" data-t="cab 420 Rohan ko chhod ke" title="Click to try in chat">"cab 420 Rohan ko chhod ke" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="zomato 600 bina Aisha ke" title="Click to try in chat">"bina Aisha ke" ⚡</button>
+        </div>
+      </div>
+
+      <div class="exp-category">
+        <div class="exp-cat-title">⚡ UPI Repayments</div>
+        <div class="exp-chips">
+          <button class="exp-chip" data-a="try" data-t="Rohan ko 500 gpay kiya" title="Click to try in chat">"Rohan ko 500 gpay kiya" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="cash de diya 300" title="Click to try in chat">"cash de diya" ⚡</button>
+        </div>
+      </div>
+
+      <div class="exp-category">
+        <div class="exp-cat-title">🔍 Balance &amp; Ledger Queries</div>
+        <div class="exp-chips">
+          <button class="exp-chip" data-a="try" data-t="mera kitna banta hai?" title="Click to try in chat">"mera kitna banta hai?" ⚡</button>
+          <button class="exp-chip" data-a="try" data-t="kisne kitna diya?" title="Click to try in chat">"kisne kitna diya?" ⚡</button>
+        </div>
+      </div>
     </div>
 
-    <p style="font-size:11.5px;color:var(--mut)" id="aist">Prototype note: this parser is a rule-based stand-in for the on-device model in the PRD. It simulates the intent score, refusals, evidence line and private answers; UPI is simulated.</p>
+    <!-- Architecture: AI Reads, Code Calculates -->
+    <div class="pn arch-card">
+      <div class="exp-header">
+        <h3>⚙️ AI Reads, Code Calculates</h3>
+        <span class="exp-badge">PRD v3.0</span>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-item">
+          <span class="arch-icon">🔒</span>
+          <div>
+            <b>On-Device SLM Privacy</b>
+            <p>Runs 100% on-device. Zero cloud leakage. Drafts remain private to the payer until confirmed.</p>
+          </div>
+        </div>
+        <div class="arch-item">
+          <span class="arch-icon">🧮</span>
+          <div>
+            <b>Deterministic Math Engine</b>
+            <p>Fair rounding &amp; greedy debt simplification. Math is strictly algorithmic — never hallucinated.</p>
+          </div>
+        </div>
+        <div class="arch-item">
+          <span class="arch-icon">⚡</span>
+          <div>
+            <b>1-Tap WhatsApp Pay Rail</b>
+            <p>Native UPI payment cards right in chat stream with 4-digit PIN simulation and real-time ledger settlement.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Author & Repository Credit -->
     <div class="side-credit">
@@ -1357,6 +1616,15 @@ body {
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
         </svg>
         <span>GitHub</span>
+      </a>
+      <span class="credit-sep">·</span>
+      <a href="PRD.pdf" download="WhatsApp_Split_PRD_v3_0.pdf" target="_blank" class="credit-gh-link" title="Download PRD Specification PDF">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+        </svg>
+        <span>PRD.pdf</span>
       </a>
     </div>
   </div>
