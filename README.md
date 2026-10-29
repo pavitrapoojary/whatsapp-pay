@@ -3,7 +3,8 @@
 > **Chat-native expense splitting and instant UPI settlement for groups — with an on-device, privacy-first AI that understands how India talks about money.**
 
 [![Live Prototype](https://img.shields.io/badge/Interactive_Prototype-Live_Demo-00a884?style=for-the-badge&logo=whatsapp&logoColor=white)](https://pavitrapoojary.github.io/whatsapp-pay/)
-[![PRD Version](https://img.shields.io/badge/PRD_Specification-v3.0_GA-6c5ce7?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](PRD.pdf)
+[![Advanced Prototype](https://img.shields.io/badge/Advanced_Prototype-v3.0_Thesis-6c5ce7?style=for-the-badge&logo=vercel&logoColor=white)](https://whatsapp-new-feature.vercel.app/)
+[![PRD Version](https://img.shields.io/badge/PRD_Specification-v3.0_GA-0984e3?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](PRD.pdf)
 [![Platform](https://img.shields.io/badge/Payment_Rail-NPCI_UPI_%2F_WhatsApp_Pay-25d366?style=for-the-badge)](https://www.npci.org.in/)
 [![Author](https://img.shields.io/badge/Product_Architect-Pavitra_Poojary-111b21?style=for-the-badge&logo=vercel&logoColor=white)](https://pavitra-poojary.vercel.app/)
 
@@ -196,6 +197,7 @@ Then visit `http://localhost:8000` in your browser.
 ## 👨‍💻 Author & Product Design
 
 Designed and architected with curiosity by **Pavitra Poojary**:
+- 🚀 **Next Version Prototype**: [whatsapp-new-feature.vercel.app](https://whatsapp-new-feature.vercel.app/)
 - 🌐 **Portfolio**: [pavitra-poojary.vercel.app](https://pavitra-poojary.vercel.app/)
 - 🐙 **GitHub**: [@pavitrapoojary](https://github.com/pavitrapoojary)
 - 💼 **Project Repo**: [github.com/pavitrapoojary/whatsapp-pay](https://github.com/pavitrapoojary/whatsapp-pay)
